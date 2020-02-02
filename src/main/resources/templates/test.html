@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Title</title>
+    <script th:replace="fragments/header :: resource"></script>
+</head>
+<body>
+<div th:switch="${tests}">
+    <h2 th:case="null">No Entries yet!</h2>
+    <div th:case="*">
+        <h2>Entry</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Customer Id</th>
+                <th>Customer Name</th>
+                <!--<th>Bill Date</th>
+                <th>Bill Amount</th>
+                <th>Surcharge</th>
+                <th>Payable Amount</th>
+                <th>Action</th>-->
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="test : ${tests}">
+                <td th:text="${test.ID}"></td>
+                <td th:text="${test.NAME}"></td>
+                <!--<td><a th:href="@{/edit/{id}(id=${user.id})}">Edit</a></td>
+                <td><a th:href="@{/delete/{id}(id=${user.id})}">Delete</a></td>-->
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

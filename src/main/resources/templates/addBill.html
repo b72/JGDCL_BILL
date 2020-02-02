@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Bill</title>
+    <script th:replace="fragments/header :: bootstrap"></script>
+</head>
+<body>
+<form action="#" th:action="@{/saveBill}" th:object="${bill}" method="post">
+    <label for="customerId">ID</label>
+    <input type="text" th:field="*{customerId}" id="customerId" placeholder="Customer Id">
+    <span th:if="${#fields.hasErrors('customerId')}" th:errors="*{customerId}"></span>
+    <label for="customerName">Name</label>
+    <input type="text" th:field="*{customerName}" id="customerName" placeholder="Customer Name">
+    <span th:if="${#fields.hasErrors('customerName')}" th:errors="*{customerName}"></span>
+    <div th:replace="fragments/input.html
+      :: formField(field='customerName', value='',size='40')">
+    </div>
+    <input type="submit" value="Add Bill">
+</form>
+<script th:replace="fragments/header :: jquery"></script>
+</body>
+</html>
