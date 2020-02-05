@@ -1,10 +1,15 @@
 package com.mamun72.controller;
 
+import com.mamun72.billarApi.JgdlApi;
 import com.mamun72.entity.Bill;
 import com.mamun72.repo.TestRepo;
 import com.mamun72.service.BillPayService;
 import com.mamun72.service.TestTableService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -50,9 +56,30 @@ public class IndexController {
             @RequestParam("userName") String userName,
             @RequestParam("BranchCodeint") String BranchCodeint,
             @RequestParam("brName") String brName,
-                                      Model model){
+                                      Model model) throws Exception {
 
-        //model.addAttribute("test", token);
-        return userName + BranchCodeint + brName;
+        JgdlApi jgdlApi = new JgdlApi();
+        String res = jgdlApi.getBillInfo("110105718");
+        return userName + BranchCodeint + brName+res;
+    }
+
+    @RequestMapping(value="/getCustomerById",
+            method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseEntity<String> login(
+            @RequestParam("customerId") String customerId) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CACHE_CONTROL, "no-cache");
+        headers.add(HttpHeaders.CONNECTION, "close");
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
+        try {
+            JgdlApi jgdlApi = new JgdlApi();
+            String res = jgdlApi.getBillInfo(customerId);
+            return ResponseEntity.ok().headers(headers).body(res);
+        }
+        catch (Exception e){
+            return  ResponseEntity.badRequest().headers(headers).body(e.getMessage());
+        }
+
     }
 }
