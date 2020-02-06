@@ -1,7 +1,17 @@
-<div th:fragment="bootstrap">
+<div th:fragment="bootstrap" xmlns:th="http://www.w3.org/1999/xhtml">
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/4.1.1/css/bootstrap.min.css}"/>
     <script th:href="@{/webjars/jquery/4.1.1/bootstrap.min.js} "></script>
 </div>
-<div th:fragment="jquery">
+<div th:fragment="jquery" xmlns:th="http://www.w3.org/1999/xhtml">
     <script th:href="@{/webjars/jquery/3.3.1-1/jquery.min.js} "></script>
+</div>
+
+<div class="header" style="border: black solid 1px;width:960px; height: 170px"
+     th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml">
+    <link rel="stylesheet" type="text/css" media="all" href="./css/header.css" th:href="@{/css/header.css}"/>
+    <div class="logo-banner">
+        <img id="logo" src="../static/images/nationalbank_logo.png" th:src="@{images/nationalbank_logo.png}"/>
+        <br>
+        <h2 id="banner">Bill Collection of KARNAPHULI Gas</h2>
+    </div>
 </div>

@@ -1,0 +1,18 @@
+.header{
+    margin: 0 auto;
+}
+#logo{
+    float: left;
+    width: 385px;
+    height: 81px;
+}
+#banner{
+    float: left;
+    font-weight: 700;
+    color: #666666;
+    line-height: 2em;
+    font-size: 2em;
+}
+.logo-banner{
+    float: left;
+}

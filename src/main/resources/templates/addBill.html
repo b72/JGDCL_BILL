@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Add Bill</title>
     <script th:replace="fragments/header :: bootstrap"></script>
+    <script th:replace="fragments/header :: header"></script>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 </head>
 <body>
 <form action="#" th:action="@{/saveBill}" th:object="${bill}" method="post">
@@ -12,12 +14,53 @@
     <span th:if="${#fields.hasErrors('customerId')}" th:errors="*{customerId}"></span>
     <label for="customerName">Name</label>
     <input type="text" th:field="*{customerName}" id="customerName" placeholder="Customer Name">
+    <label for="customerName">Date</label>
+    <input type="text" th:field="*{monYear}" id="monYear" placeholder="Customer Name">
+    <label for="customerName">Bill Amount</label>
+    <input type="text" th:field="*{billAmount}" id="billAmount" placeholder="Customer Name">
+    <label for="customerName">surcharge</label>
+    <input type="text" th:field="*{surcharge}" id="surcharge" placeholder="Customer Name">
+    <label for="customerName">payable amount</label>
+    <input type="text" th:field="*{paybleAmount}" id="paybleAmount" placeholder="Customer Name">
+    <label for="customerName">Bill Count</label>
+    <input type="text" th:field="*{billcount}" id="billcount" placeholder="Customer Name">
     <span th:if="${#fields.hasErrors('customerName')}" th:errors="*{customerName}"></span>
     <div th:replace="fragments/input.html
       :: formField(field='customerName', value='',size='40')">
     </div>
+    <input class="check" type="button" value="Verify"/>
     <input type="submit" value="Add Bill">
 </form>
+<script type="text/javascript">
+    $(".check").click(function (e) {
+        e.preventDefault();
+        var id = $("#customerId").val();
+        id = isNaN(id) ? 0 : id;
+        if(id > 0){
+            $.ajax({
+                method: "POST",
+                url: "/api/ajaxcall",
+                contentType: "application/json",
+                dataType: "json",
+                data: JSON.stringify(id),
+                success: function(response) {
+                     $('#result').html(response);
+                    console.log(response);
+
+                    alert(response.responseText);
+
+
+                },
+                error: function(response) {
+                    console.log(response);
+                    //alert(response.responseText);
+
+
+                }
+            })
+        }
+    });
+</script>
 <script th:replace="fragments/header :: jquery"></script>
 </body>
 </html>
