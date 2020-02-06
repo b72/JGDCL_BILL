@@ -2,14 +2,20 @@ package com.mamun72.controller;
 
 import com.mamun72.billarApi.JgdlApi;
 import com.mamun72.entity.Bill;
-import com.mamun72.repo.TestRepo;
+import com.mamun72.entity.User;
 import com.mamun72.service.BillPayService;
 import com.mamun72.service.TestTableService;
+import com.mamun72.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.JsonParser;
+import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,26 +23,35 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.IOException;
-import java.util.List;
+import javax.servlet.http.HttpSession;
+import java.util.Map;
+import java.util.Optional;
 
 @Controller
 public class IndexController {
 
     @Autowired
     TestTableService testTableService;
+    @Autowired
+    UserService userService;
+
     @RequestMapping(value = "/entry", method = RequestMethod.GET)
     public String index(Model model) {
-        for (Object obj : testTableService.getAll()) {System.out.println(obj.toString());}
+        for (Object obj : testTableService.getAll()) {
+            System.out.println(obj.toString());
+        }
         model.addAttribute("tests", testTableService.getAll());
         return "test";
     }
 
     @Autowired
     BillPayService billPayService;
+
     @RequestMapping(value = "/bill", method = RequestMethod.GET)
     public String bill(Model model) {
-        for (Object obj : billPayService.getAllBills()) {System.out.println(obj.toString());}
+        for (Object obj : billPayService.getAllBills()) {
+            System.out.println(obj.toString());
+        }
         model.addAttribute("bills", billPayService.getAllBills());
         return "index";
     }
@@ -51,35 +66,71 @@ public class IndexController {
         return "index";
     }
 
-    @RequestMapping(value="/login", method = RequestMethod.GET)
-    public @ResponseBody String login(
+    @RequestMapping(value = "/userlogin", method = RequestMethod.GET)
+    public @ResponseBody
+    String login(
             @RequestParam("userName") String userName,
             @RequestParam("BranchCodeint") String BranchCodeint,
             @RequestParam("brName") String brName,
-                                      Model model) throws Exception {
-
-        JgdlApi jgdlApi = new JgdlApi();
-        String res = jgdlApi.getBillInfo("110105718");
-        return userName + BranchCodeint + brName+res;
+            @RequestParam("userId") String userId,
+            HttpSession httpSession
+    ) {
+         Optional<User> user = userService.getOneByName(userName);
+        if(user.isPresent()){
+            User found = user.get();
+            Authentication authentication = new UsernamePasswordAuthenticationToken(found, null,
+                    AuthorityUtils.createAuthorityList("ROLE_USER"));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            Authentication authenticationUser = SecurityContextHolder.getContext().getAuthentication();
+            if (!(authenticationUser instanceof AnonymousAuthenticationToken)) {
+                String currentUserName = authenticationUser.getName();
+                return currentUserName + "AUTH";
+            }else{
+                return found.getUserName()+ " not Auth";
+            }
+        }
+        else{
+            User userNw = new User();
+            userNw.setUserName(userName);
+            userNw.setBranchCodeint(BranchCodeint);
+            userNw.setBrName(brName);
+            userNw.setUserId(userId);
+            System.out.println(userService.saveUser(userNw).getUserName());
+            Authentication authentication = new UsernamePasswordAuthenticationToken(user, null,
+                    AuthorityUtils.createAuthorityList("ROLE_USER"));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            Authentication authenticationUser = SecurityContextHolder.getContext().getAuthentication();
+            if (!(authenticationUser instanceof AnonymousAuthenticationToken)) {
+                String currentUserName = authenticationUser.getName();
+                return currentUserName + "AUTH";
+            }else{
+                return "User Created & not Auth";
+            }
+        }
     }
 
-    @RequestMapping(value="/getCustomerById",
+    @RequestMapping(value = "/getCustomerById",
             method = RequestMethod.GET)
     public @ResponseBody
     ResponseEntity<String> login(
-            @RequestParam("customerId") String customerId) {
+            @RequestParam("customerId") String customerId, HttpSession httpSession) {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CACHE_CONTROL, "no-cache");
         headers.add(HttpHeaders.CONNECTION, "close");
         headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
+        System.out.println(httpSession.getAttribute("USER").toString());
         try {
             JgdlApi jgdlApi = new JgdlApi();
             String res = jgdlApi.getBillInfo(customerId);
-            return ResponseEntity.ok().headers(headers).body(res);
+            JsonParser springParser = JsonParserFactory.getJsonParser();
+            Map<String, Object> map = springParser.parseMap(res);
+            if (map.get("status") == "200") {
+                // process request & do other stuffs
+                return ResponseEntity.ok().headers(headers).body(res);
+            } else
+                return ResponseEntity.badRequest().headers(headers).body(res);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).headers(headers).body(e.getMessage());
         }
-        catch (Exception e){
-            return  ResponseEntity.badRequest().headers(headers).body(e.getMessage());
-        }
-
     }
 }
