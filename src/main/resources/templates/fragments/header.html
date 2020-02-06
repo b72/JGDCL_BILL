@@ -6,12 +6,15 @@
     <script th:href="@{/webjars/jquery/3.3.1-1/jquery.min.js} "></script>
 </div>
 
-<div class="header" style="border: black solid 1px;width:960px; height: 170px"
-     th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml">
-    <link rel="stylesheet" type="text/css" media="all" href="./css/header.css" th:href="@{/css/header.css}"/>
+<div class="header" id="header" th:fragment="banner" xmlns:th="http://www.w3.org/1999/xhtml">
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{~/css/header.css}" />
     <div class="logo-banner">
-        <img id="logo" src="../static/images/nationalbank_logo.png" th:src="@{images/nationalbank_logo.png}"/>
-        <br>
-        <h2 id="banner">Bill Collection of KARNAPHULI Gas</h2>
+        <img id="logo" th:src="@{~/images/nationalbank_logo.png}"/>
+        <p>Bill Collection of KARNAPHULI Gas</p>
+    </div>
+    <div class="display-login">
+        <label id="header-branch">[Branch: Information Technology Division]</label>
+        <label id="header-user">[User: Mohammad Al Mamun]</label>
+        <a href="#"><img id="logout" th:src="@{~/images/logout.jpg}"/></a>
     </div>
 </div>

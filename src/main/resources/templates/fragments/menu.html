@@ -1,0 +1,17 @@
+<div th:fragment="bootstrap" xmlns:th="http://www.w3.org/1999/xhtml">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/4.1.1/css/bootstrap.min.css}"/>
+    <script th:href="@{/webjars/jquery/4.1.1/bootstrap.min.js} "></script>
+</div>
+<div th:fragment="jquery" xmlns:th="http://www.w3.org/1999/xhtml">
+    <script th:href="@{/webjars/jquery/3.3.1-1/jquery.min.js} "></script>
+</div>
+
+<div class="menu" th:fragment="menu" xmlns:th="http://www.w3.org/1999/xhtml">
+     <link rel="stylesheet" type="text/css" media="all" th:href="@{~/css/menu.css}" />
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">News</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">About</a></li>
+    </ul>
+</div>

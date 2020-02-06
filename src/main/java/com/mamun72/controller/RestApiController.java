@@ -23,11 +23,12 @@ public class RestApiController {
     @RequestMapping(value = "/ajaxcall", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> ajaxCall(@Valid @RequestBody Long id) {
         System.out.println("ID: " + id);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE,"text/html");
         if (billRepo.existsById(id)) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_TYPE,"text/html");
+
             return ResponseEntity.ok().headers(headers).body("Exists");
         }
-        return new ResponseEntity<String>("Not Exists", new HttpHeaders(), HttpStatus.OK);
+        return ResponseEntity.accepted().headers(headers).body("Doesn't Exist");
     }
 }

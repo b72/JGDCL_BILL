@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <title>Add Bill</title>
     <script th:replace="fragments/header :: bootstrap"></script>
-    <script th:replace="fragments/header :: header"></script>
+    <script th:replace="fragments/header :: banner"></script>
+    <script th:replace="fragments/menu :: menu"></script>
+    <script th:src="@{/js/ajax_call.js}"></script>
     <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 </head>
 <body>
@@ -28,39 +30,10 @@
     <div th:replace="fragments/input.html
       :: formField(field='customerName', value='',size='40')">
     </div>
-    <input class="check" type="button" value="Verify"/>
+    <input class="check" type="button" value="Verify" onclick="ajaxCall()"/>
     <input type="submit" value="Add Bill">
 </form>
-<script type="text/javascript">
-    $(".check").click(function (e) {
-        e.preventDefault();
-        var id = $("#customerId").val();
-        id = isNaN(id) ? 0 : id;
-        if(id > 0){
-            $.ajax({
-                method: "POST",
-                url: "/api/ajaxcall",
-                contentType: "application/json",
-                dataType: "json",
-                data: JSON.stringify(id),
-                success: function(response) {
-                     $('#result').html(response);
-                    console.log(response);
 
-                    alert(response.responseText);
-
-
-                },
-                error: function(response) {
-                    console.log(response);
-                    //alert(response.responseText);
-
-
-                }
-            })
-        }
-    });
-</script>
 <script th:replace="fragments/header :: jquery"></script>
 </body>
 </html>
