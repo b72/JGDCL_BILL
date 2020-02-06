@@ -6,6 +6,7 @@ import com.mamun72.entity.User;
 import com.mamun72.service.BillPayService;
 import com.mamun72.service.TestTableService;
 import com.mamun72.service.UserService;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 @Controller
@@ -75,19 +77,12 @@ public class IndexController {
             @RequestParam("userId") String userId,
             HttpSession httpSession
     ) {
+        String returnMsg = null;
          Optional<User> user = userService.getOneByName(userName);
         if(user.isPresent()){
             User found = user.get();
-            Authentication authentication = new UsernamePasswordAuthenticationToken(found, null,
-                    AuthorityUtils.createAuthorityList("ROLE_USER"));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            Authentication authenticationUser = SecurityContextHolder.getContext().getAuthentication();
-            if (!(authenticationUser instanceof AnonymousAuthenticationToken)) {
-                String currentUserName = authenticationUser.getName();
-                return currentUserName + "AUTH";
-            }else{
-                return found.getUserName()+ " not Auth";
-            }
+            if(createAuth(found)) returnMsg = found.toString();
+            else returnMsg = "Unable to login";
         }
         else{
             User userNw = new User();
@@ -95,18 +90,12 @@ public class IndexController {
             userNw.setBranchCodeint(BranchCodeint);
             userNw.setBrName(brName);
             userNw.setUserId(userId);
-            System.out.println(userService.saveUser(userNw).getUserName());
-            Authentication authentication = new UsernamePasswordAuthenticationToken(user, null,
-                    AuthorityUtils.createAuthorityList("ROLE_USER"));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            Authentication authenticationUser = SecurityContextHolder.getContext().getAuthentication();
-            if (!(authenticationUser instanceof AnonymousAuthenticationToken)) {
-                String currentUserName = authenticationUser.getName();
-                return currentUserName + "AUTH";
-            }else{
-                return "User Created & not Auth";
-            }
+            User created = userService.saveUser(userNw);
+            if((created.getUserName() != null) && createAuth(created)) returnMsg = created.toString();
+            else if((created.getUserName() != null) && !createAuth(created)) returnMsg = "Created but unable to auth";
+            else returnMsg = "Something went wrong!";
         }
+        return returnMsg;
     }
 
     @RequestMapping(value = "/getCustomerById",
@@ -131,6 +120,19 @@ public class IndexController {
                 return ResponseEntity.badRequest().headers(headers).body(res);
         } catch (Exception e) {
             return ResponseEntity.status(500).headers(headers).body(e.getMessage());
+        }
+    }
+
+    @Nullable
+    private boolean createAuth(User user){
+        Authentication authentication = new UsernamePasswordAuthenticationToken(user, null,
+                AuthorityUtils.createAuthorityList("ROLE_USER"));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        Authentication authenticationUser = SecurityContextHolder.getContext().getAuthentication();
+        if (!(authenticationUser instanceof AnonymousAuthenticationToken)) {
+            return true;
+        }else{
+            return false;
         }
     }
 }
