@@ -35,8 +35,6 @@ public class JgdlApi {
                 .build();
         Response response = client.newCall(request).execute();
         String res = response.body().string();
-        System.out.println(finalUrl);
-        System.out.println(res);
         response.body().close();
         return res;
     }
@@ -81,5 +79,9 @@ public class JgdlApi {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void keepApiLog()
+    {
     }
 }
