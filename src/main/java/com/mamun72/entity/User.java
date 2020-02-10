@@ -11,6 +11,10 @@ import java.io.Serializable;
 @Table(name = "USER_TABLE_BILL")
 public class User implements Serializable {
 
+    public User() {
+        super();
+    }
+
     @Column(unique = true)
     private String userId;
     @Id
