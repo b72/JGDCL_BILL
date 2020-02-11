@@ -1,26 +1,27 @@
-function ajaxCall() {
-    var id = $("#customerId").val();
-    id = isNaN(id) ? 0 : id;
-    if (id > 0) {
-        $.ajax({
-            method: "POST",
-            url: "/api/ajaxcall",
-            contentType: "application/json",
-            data: JSON.stringify(id),
-            success: function (response) {
-                $('#result').html(response);
-                console.log(response);
+$(document).ready(function(){
+    $("#get-bill").submit(function(e) {
+        alert('on submit');
+        e.preventDefault();
+        var id = $('#get-bill input[name="customer_id"]').val();
+        if (id) {
+            $.ajax({
+                method: "GET",
+                url: "/ajax/getCustomerById?customerId="+id,
+                success: function (response) {
+                    $('#result').html(response);
+                    console.log(response);
 
-                alert("The account"+response);
+                    alert("The account"+response);
+                    $("#test-data").val(response.toString());
+
+                },
+                error: function (e) {
+                    console.log(e);
+                    alert(response.responseText);
 
 
-            },
-            error: function (e) {
-                console.log(e);
-                //alert(response.responseText);
-
-
-            }
-        })
-    }
-}
+                }
+            })
+        }
+    });
+});
