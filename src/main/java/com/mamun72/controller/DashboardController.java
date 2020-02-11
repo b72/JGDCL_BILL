@@ -32,6 +32,8 @@ public class DashboardController {
         if(user != null)  {
             System.out.println(user);
             model.addAttribute("user", user);
+            model.addAttribute("title", "JGDCL|NBL");
+            model.addAttribute("name", "Jalalabd Gas Distribution Company Limited");
             return "index";
         }
         else return "index";
@@ -41,7 +43,7 @@ public class DashboardController {
     public @ResponseBody
     void logout(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         User user = getLoggedInUser();
-        if(user != null)  {
+        if(user == null)  {
             response.sendRedirect("/errorPage?code=404");
         }
         else {

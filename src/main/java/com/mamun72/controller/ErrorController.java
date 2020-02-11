@@ -16,7 +16,7 @@ public class ErrorController {
         String errorMsg = "";
         String path = "";
         int httpErrorCode = errorCode;
-
+        System.out.println("Code " + errorCode.toString());
         switch (httpErrorCode) {
             case 400: {
                 errorMsg = "Http Error Code: 400. Bad Request";

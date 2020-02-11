@@ -5,15 +5,15 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Title</title>
+    <title th:text="${title}"></title>
     <script th:replace="fragments/header :: bootstrap"></script>
 </head>
 <body>
 <div th:switch="${user}">
     <div th:case="null">Please go back & try again</div>
     <div th:case="*">
-        <p>Welcome</p>
-        <p th:text="${user.userName}"></p>
+        <script th:replace="fragments/header :: banner"></script>
+        <script th:replace="fragments/menu :: menu"></script>
     </div>
 </div>
 <script th:replace="fragments/header :: jquery"></script>

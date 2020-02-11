@@ -10,11 +10,11 @@
     <link rel="stylesheet" type="text/css" media="all" th:href="@{~/css/header.css}" />
     <div class="logo-banner">
         <img id="logo" th:src="@{~/images/nationalbank_logo.png}"/>
-        <p>Bill Collection of KARNAPHULI Gas</p>
+        <p th:text="'Bill Collection of ' + ${name}"></p>
     </div>
     <div class="display-login">
-        <label id="header-branch">[Branch: Information Technology Division]</label>
-        <label id="header-user">[User: Mohammad Al Mamun]</label>
-        <a href="#"><img id="logout" th:src="@{~/images/logout.jpg}"/></a>
+        <label id="header-branch" th:text="${user.brName}"></label>
+        <label id="header-user" th:text="${user.userName}"></label>
+        <a href="/user-logout"><img id="logout" th:src="@{~/images/logout.jpg}"/></a>
     </div>
 </div>
