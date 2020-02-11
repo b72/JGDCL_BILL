@@ -26,23 +26,8 @@
                     </form>
                 </div>
                 <div class="col-md-7">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th scope="col">Field</th>
-                            <th scope="col">Values</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="student: ${students} ">
-                            <td th:utext="${student.id}"></td>
-                            <td th:utext="${student.firstName}"></td>
-                        </tr>
-
-                        </tbody>
+                    <table class="table table-striped" id="display">
                     </table>
-                    <label id="testing">Data: </label>
-                    <input id="test-data">
                 </div>
             </div>
         </div>
