@@ -15,6 +15,7 @@ public class ErrorController {
         ModelAndView errorPage = new ModelAndView("errorPage");
         String errorMsg = "";
         String path = "";
+        String title = "";
         int httpErrorCode = errorCode;
         System.out.println("Code " + errorCode.toString());
         switch (httpErrorCode) {
@@ -31,6 +32,7 @@ public class ErrorController {
                 break;
             }
             case 4040: {
+                title = "Logout";
                 errorMsg = "Successfully logged out";
                 break;
             }
@@ -47,6 +49,9 @@ public class ErrorController {
                 errorCode = null;
                 path = "/";
         }
+        errorPage.addObject("name", "JGDCL");
+        errorPage.addObject("title", title);
+        errorPage.addObject("user", null);
         errorPage.addObject("errorMsg", errorMsg);
         errorPage.addObject("code", errorCode);
         errorPage.addObject("path", path);

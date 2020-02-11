@@ -1,21 +1,34 @@
 <!DOCTYPE html>
 <html>
-<head lang="en">
+<head>
     <meta charset="UTF-8">
-    <title></title>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title th:text="${title}">Error</title>
+    <script th:replace="fragments/header :: bootstrap"></script>
+    <script th:replace="fragments/header :: jquery"></script>
 </head>
 <body>
-<div th:switch="${code}">
-    <div th:case="null">
-        <h1>:-(</h1>
-        <h2>Something went wrong and we couldn't complete your request.</h2>
-        <a href="/">Go back to Home</a>
+<script th:replace="fragments/header :: banner"></script>
+<div class="page">
+    <div th:switch="${code}">
+        <div th:case="null">
+            <div style="text-align: center">
+                <h1>:-(</h1>
+                <h2>Something went wrong and we couldn't complete your request.</h2>
+                <a href="/">Go back to Home</a>
+            </div>
+        </div>
+        <div th:case="*">
+            <div style="text-align: center">
+                <h1>:-(</h1>
+                <h2 th:text="${errorMsg}"></h2>
+                <a th:href="@{'/' + ${path}}">Go back</a>
+            </div>
+        </div>
     </div>
-    <div th:case="*">
-        <h1>:-(</h1>
-        <h2 th:text="${errorMsg}"></h2>
-        <a th:href="@{'/' + ${path}}">Go back</a>
-    </div>
+    <script th:replace="fragments/header :: footer"></script>
 </div>
 </body>
 </html>

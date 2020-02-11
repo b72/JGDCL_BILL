@@ -10,10 +10,13 @@
 </head>
 <body>
 <div th:switch="${user}">
-    <div th:case="null">Please go back & try again</div>
-    <div th:case="*">
-        <script th:replace="fragments/header :: banner"></script>
-        <script th:replace="fragments/menu :: menu"></script>
+    <div class="page">
+        <div th:case="null">Please go back & try again</div>
+        <div th:case="*">
+            <script th:replace="fragments/header :: banner"></script>
+            <script th:replace="fragments/menu :: menu"></script>
+        </div>
+        <script th:replace="fragments/header :: footer"></script>
     </div>
 </div>
 <script th:replace="fragments/header :: jquery"></script>

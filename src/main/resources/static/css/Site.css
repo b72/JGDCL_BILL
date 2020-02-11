@@ -1,6 +1,7 @@
 ﻿.page{
     margin: 0 auto;
     width: 960px;
+    height: 480px;
     border: 1px solid black;
 }
 #get-bill{

@@ -9,15 +9,29 @@
 </div>
 
 <div class="header" id="header" th:fragment="banner" xmlns:th="http://www.w3.org/1999/xhtml">
-    <link rel="stylesheet" type="text/css" media="all" th:href="@{~/css/header.css}" />
-    <link rel="stylesheet" type="text/css" media="all" th:href="@{~/css/Site.css}" />
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{~/css/header.css}"/>
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{~/css/Site.css}"/>
     <div class="logo-banner">
         <img id="logo" th:src="@{~/images/nationalbank_logo.png}"/>
         <p th:text="'Bill Collection of ' + ${name}"></p>
     </div>
-    <div class="display-login">
-        <label id="header-branch" th:text="${user.brName}"></label>
-        <label id="header-user" th:text="${user.userName}"></label>
-        <a href="/user-logout"><img id="logout" th:src="@{~/images/logout.jpg}"/></a>
+    <div th:switch="${user}">
+        <div th:case="null">
+            <a style="float: right; margin: 120px 0px" href="http://192.168.0.125/sso/">Click Here to Go back SSO</a>
+        </div>
+        <div th:case="*">
+            <div class="display-login">
+                <label id="header-branch" th:text="${user.brName}"></label>
+                <label id="header-user" th:text="${user.userName}"></label>
+                <a href="/user-logout"><img id="logout" th:src="@{~/images/logout.jpg}"/></a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="footer" id="footer" th:fragment="footer">
+    <div style="width: 800px; height: 100px; text-align: center; margin-left: auto; margin-right: auto; padding-top: 285px; padding-bottom: auto; font-family: Calibri; font-size: 11px;">
+        <hr>
+        National Bank Limited &nbsp; |&nbsp; Information Technology Division
+        <hr>
     </div>
 </div>
