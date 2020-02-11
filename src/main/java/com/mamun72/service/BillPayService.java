@@ -12,4 +12,5 @@ public class BillPayService {
     public Iterable<Bill> getAllBills(){
         return billRepo.findAll();
     }
+
 }

@@ -1,0 +1,42 @@
+#header{
+    margin: 0 auto;
+    width: 960px;
+    height: 140px;
+    border: 1px solid black;
+}
+#header p{
+    color: #666666;
+    font-family: sans-serif;
+    font-size: 26px;
+    padding-left: 3px;
+}
+
+#logo {
+    float: left;
+    width: 385px;
+    height: 81px;
+}
+
+.logo-banner {
+    float: left;
+}
+.display-login{
+    float: right;
+    width: 320px;
+    height: 130px;
+    padding-right: 8px;
+    padding-top: 8px;
+}
+#header-branch{
+    float: right;
+}
+#header-user{
+    float: right;
+}
+#logout{
+    float: right;
+    width: 65px;
+    height: 45px;
+    margin-top: 5px;
+    margin-left: 45px;
+}

@@ -1,4 +1,4 @@
-<div th:fragment="formField (field, value, size)">
+<div th:fragment="formField (field, value, size)" xmlns:th="http://www.w3.org/1999/xhtml">
     <div>
         <label th:for="${#strings.toLowerCase(field)}"> <span
                 th:text="${field}">Field</span>

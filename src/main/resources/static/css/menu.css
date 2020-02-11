@@ -1,0 +1,28 @@
+.menu{
+    width: 960px;
+    margin: 0 auto;
+    list-style-type: none;
+    padding: 0;
+    border: 1px solid black;
+    background: #0B5E0A;
+    height: 30px;
+}
+.menu ul{
+
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+.menu ul li{
+
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+.menu ul li a{
+    float: left;
+    color: #DDE4EC;
+    padding-left: 10px;
+    padding-right: 10px;
+    border: #4E667D;
+}

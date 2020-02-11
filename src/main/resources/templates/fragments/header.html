@@ -1,7 +1,20 @@
-<div th:fragment="bootstrap">
+<div th:fragment="bootstrap" xmlns:th="http://www.w3.org/1999/xhtml">
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/4.1.1/css/bootstrap.min.css}"/>
     <script th:href="@{/webjars/jquery/4.1.1/bootstrap.min.js} "></script>
 </div>
-<div th:fragment="jquery">
+<div th:fragment="jquery" xmlns:th="http://www.w3.org/1999/xhtml">
     <script th:href="@{/webjars/jquery/3.3.1-1/jquery.min.js} "></script>
+</div>
+
+<div class="header" id="header" th:fragment="banner" xmlns:th="http://www.w3.org/1999/xhtml">
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{~/css/header.css}" />
+    <div class="logo-banner">
+        <img id="logo" th:src="@{~/images/nationalbank_logo.png}"/>
+        <p>Bill Collection of KARNAPHULI Gas</p>
+    </div>
+    <div class="display-login">
+        <label id="header-branch">[Branch: Information Technology Division]</label>
+        <label id="header-user">[User: Mohammad Al Mamun]</label>
+        <a href="#"><img id="logout" th:src="@{~/images/logout.jpg}"/></a>
+    </div>
 </div>
