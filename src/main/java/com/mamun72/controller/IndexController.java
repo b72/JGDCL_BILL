@@ -77,8 +77,6 @@ public class IndexController {
             @RequestParam Map<String, String> reqParam,
             HttpServletResponse httpServletResponse
     ) throws IOException {
-        String returnMsg = null;
-        System.out.println(reqParam.toString());
         final ObjectMapper mapper = new ObjectMapper();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         final User us = mapper.convertValue(reqParam, User.class);

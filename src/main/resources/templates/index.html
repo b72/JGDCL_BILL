@@ -9,33 +9,12 @@
     <script th:replace="fragments/header :: bootstrap"></script>
 </head>
 <body>
-<div th:switch="${bills}">
-    <h2 th:case="null">No bills yet!</h2>
+<div th:switch="${user}">
+    <div th:case="null">Please go back & try again</div>
     <div th:case="*">
-        <h2>Bill</h2>
-        <table>
-            <thead>
-            <tr>
-                <th>Customer Id</th>
-                <th>Customer Name</th>
-                <!--<th>Bill Date</th>
-                <th>Bill Amount</th>
-                <th>Surcharge</th>
-                <th>Payable Amount</th>
-                <th>Action</th>-->
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="bill : ${bills}">
-                <td th:text="${bill.customerId}"></td>
-                <td th:text="${bill.customerName}"></td>
-                <!--<td><a th:href="@{/edit/{id}(id=${user.id})}">Edit</a></td>
-                <td><a th:href="@{/delete/{id}(id=${user.id})}">Delete</a></td>-->
-            </tr>
-            </tbody>
-        </table>
+        <p>Welcome</p>
+        <p th:text="${user.userName}"></p>
     </div>
-    <p><a href="/addBill">Add a new Bill</a></p>
 </div>
 <script th:replace="fragments/header :: jquery"></script>
 </body>

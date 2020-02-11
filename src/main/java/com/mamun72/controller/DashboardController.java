@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,11 +26,15 @@ public class DashboardController {
 
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public @ResponseBody
-    String dashboard(){
+    public String dashboard(Model model){
         User user = getLoggedInUser();
-        if(user != null)  return "Welcome " + user.getUserName() + " this is your dashboard";
-        else return "Please login first";
+
+        if(user != null)  {
+            System.out.println(user);
+            model.addAttribute("user", user);
+            return "index";
+        }
+        else return "index";
     }
 
     @RequestMapping(value = "/user-logout", method = RequestMethod.GET)
