@@ -1,12 +1,19 @@
-<div th:fragment="formField (field, value, size)" xmlns:th="http://www.w3.org/1999/xhtml">
+<div class="form-group" th:fragment="formField (field, value, class, placeholder)" xmlns:th="http://www.w3.org/1999/xhtml">
     <div>
-        <label th:for="${#strings.toLowerCase(field)}"> <span
+        <label th:for="${#strings.toLowerCase(#strings.replace(field,' ','_'))}"> <span
                 th:text="${field}">Field</span>
         </label>
     </div>
     <div>
-        <input type="text" th:id="${#strings.toLowerCase(field)}"
-               th:name="${#strings.toLowerCase(field)}" th:value="${value}"
-               th:size="${size}">
+        <input type="text" th:id="${#strings.toLowerCase(#strings.replace(field,' ','_'))}"
+               th:name="${#strings.toLowerCase(#strings.replace(field,' ','_'))}" th:value="${value}"
+               th:class="${class}" th:placeholder="${placeholder}"/>
     </div>
+</div>
+
+<div th:fragment="csrf" xmlns:th="http://www.w3.org/1999/xhtml">
+    <input
+            type="hidden"
+            th:name="${_csrf.parameterName}"
+            th:value="${_csrf.token}" />
 </div>

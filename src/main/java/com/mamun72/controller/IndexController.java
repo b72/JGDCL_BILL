@@ -133,7 +133,7 @@ public class IndexController {
         }
     }
 
-    @RequestMapping(value = "/ajax/getCustomerById",
+/*    @RequestMapping(value = "/ajax/getCustomerById",
             method = RequestMethod.GET)
     public @ResponseBody
     ResponseEntity<String> login(
@@ -156,7 +156,7 @@ public class IndexController {
         } catch (Exception e) {
             return ResponseEntity.status(500).headers(headers).body(e.getMessage());
         }
-    }
+    }*/
 
     @Nullable
     private boolean createAuth(User user){
