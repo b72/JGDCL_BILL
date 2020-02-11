@@ -6,3 +6,6 @@
 #get-bill{
     margin: 10px 10px;
 }
+.loader{
+    display: none;
+}
