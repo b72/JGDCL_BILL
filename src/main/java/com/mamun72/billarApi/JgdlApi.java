@@ -1,14 +1,13 @@
 package com.mamun72.billarApi;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 
 import javax.net.ssl.*;
 import java.security.cert.CertificateException;
 
 
 public class JgdlApi {
+
     private String baseUrl;
 
     private String header;
@@ -31,6 +30,22 @@ public class JgdlApi {
         Request request = new Request.Builder()
                 .url(finalUrl)
                 .method("GET", null)
+                .addHeader("Authorization", "Basic bmJsOkpuQGJUMUQ1MQ==")
+                .build();
+        Response response = client.newCall(request).execute();
+        String res = response.body().string();
+        response.body().close();
+        return res;
+    }
+
+    public String payBill(PayBill payBill) throws Exception {
+        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+        RequestBody body = RequestBody.create(payBill.toString(), JSON);
+        String finalUrl = this.baseUrl + "api/payment";
+        OkHttpClient client = getUnsafeOkHttpClient();
+        Request request = new Request.Builder()
+                .url(finalUrl)
+                .post(body)
                 .addHeader("Authorization", "Basic bmJsOkpuQGJUMUQ1MQ==")
                 .build();
         Response response = client.newCall(request).execute();
