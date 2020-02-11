@@ -7,6 +7,7 @@ $(document).ready(function(){
             $.ajax({
                 method: "GET",
                 url: "/ajax/getCustomerById?customerId="+id,
+                headers: {"X-CSRF-TOKEN": $('#get-bill input[name="_csrf"]').val()},
                 success: function (response) {
                     $('#result').html(response);
                     console.log(response);

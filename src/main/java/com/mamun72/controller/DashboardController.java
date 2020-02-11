@@ -7,12 +7,10 @@ import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -73,25 +71,32 @@ public class DashboardController {
     @RequestMapping(value = "/ajax/getCustomerById",
             method = RequestMethod.GET)
     public @ResponseBody
-    ResponseEntity<String> login(
-            @RequestParam("customerId") String customerId) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CACHE_CONTROL, "no-cache");
-        headers.add(HttpHeaders.CONNECTION, "close");
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
-        try {
-            JgdlApi jgdlApi = new JgdlApi();
-            String res = jgdlApi.getBillInfo(customerId);
-            JsonParser springParser = JsonParserFactory.getJsonParser();
-            Map<String, Object> map = springParser.parseMap(res);
-            if ((int) map.get("status") == 200) {
-                // process request & do other stuffs
-                return ResponseEntity.ok().headers(headers).body(res);
-            } else
-                return ResponseEntity.badRequest().headers(headers).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).headers(headers).body(e.getMessage());
+    ResponseEntity<String> getCustomer(
+            @RequestParam("customerId") String customerId,
+            @RequestHeader(name = "X-CSRF-TOKEN") String csrf_token,
+            HttpServletRequest request) {
+        HttpHeaders sentHeaders = new HttpHeaders();
+        sentHeaders.add(HttpHeaders.CACHE_CONTROL, "no-cache");
+        sentHeaders.add(HttpHeaders.CONNECTION, "close");
+        sentHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
+        if(csrf_token.equals(new HttpSessionCsrfTokenRepository().loadToken(request).getToken())){
+            try {
+                JgdlApi jgdlApi = new JgdlApi();
+                String res = jgdlApi.getBillInfo(customerId);
+                JsonParser springParser = JsonParserFactory.getJsonParser();
+                Map<String, Object> map = springParser.parseMap(res);
+                if ((int) map.get("status") == 200) {
+                    // process request & do other stuffs
+                    return ResponseEntity.ok().headers(sentHeaders).body(res);
+                } else
+                    return ResponseEntity.badRequest().headers(sentHeaders).body(res);
+            } catch (Exception e) {
+                return ResponseEntity.status(500).headers(sentHeaders).body(e.getMessage());
+            }
+        }else{
+            return ResponseEntity.status(400).headers(sentHeaders).body("X-CSRF-TOKEN not found or mismatch");
         }
+
     }
 
 
