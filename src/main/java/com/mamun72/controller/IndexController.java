@@ -1,5 +1,7 @@
 package com.mamun72.controller;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mamun72.billarApi.JgdlApi;
 import com.mamun72.entity.Bill;
 import com.mamun72.entity.User;
@@ -24,9 +26,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 @Controller
@@ -37,7 +40,7 @@ public class IndexController {
     @Autowired
     UserService userService;
 
-    @RequestMapping(value = "/entry", method = RequestMethod.GET)
+  @RequestMapping(value = "/entry", method = RequestMethod.GET)
     public String index(Model model) {
         for (Object obj : testTableService.getAll()) {
             System.out.println(obj.toString());
@@ -69,36 +72,68 @@ public class IndexController {
     }
 
     @RequestMapping(value = "/userlogin", method = RequestMethod.GET)
-    public @ResponseBody
-    String login(
-            @RequestParam("userName") String userName,
-            @RequestParam("BranchCodeint") String BranchCodeint,
-            @RequestParam("brName") String brName,
-            @RequestParam("userId") String userId,
-            HttpSession httpSession
-    ) {
-        String returnMsg = null;
-         Optional<User> user = userService.getOneByName(userName);
+    public
+    void login(
+            @RequestParam Map<String, String> reqParam,
+            HttpServletResponse httpServletResponse
+    ) throws IOException {
+        final ObjectMapper mapper = new ObjectMapper();
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        final User us = mapper.convertValue(reqParam, User.class);
+         Optional<User> user = userService.getOneByName(us.getUserName());
         if(user.isPresent()){
             User found = user.get();
-            if(createAuth(found)) returnMsg = found.toString();
-            else returnMsg = "Unable to login";
+            if(createAuth(found)) {
+                /*
+                * redirect user to dashboard
+                * */
+                //httpServletResponse.sendRedirect("/dashboard");
+                httpServletResponse.sendRedirect("/");
+
+            }
+            else {
+                /*
+                * user not found or unable to login
+                * redirect user to error
+                * */
+                httpServletResponse.sendRedirect("/errorPage?code=404");
+            }
         }
         else{
             User userNw = new User();
-            userNw.setUserName(userName);
-            userNw.setBranchCodeint(BranchCodeint);
-            userNw.setBrName(brName);
-            userNw.setUserId(userId);
+            userNw.setUserName(us.getUserName());
+            userNw.setBranchCodeint(us.getBranchCodeint());
+            userNw.setBrName(us.getBrName());
+            userNw.setUserId(us.getUserId());
             User created = userService.saveUser(userNw);
-            if((created.getUserName() != null) && createAuth(created)) returnMsg = created.toString();
-            else if((created.getUserName() != null) && !createAuth(created)) returnMsg = "Created but unable to auth";
-            else returnMsg = "Something went wrong!";
+            if((created.getUserName() != null) && createAuth(created)) {
+                /*
+                * User created & logged in
+                * redirect user to dashboard
+                *
+                * */
+                httpServletResponse.sendRedirect("/");
+            }
+            else if((created.getUserName() != null) && !createAuth(created)) {
+                /*
+                 * User created & But not logged in
+                 * redirect user to error
+                 *
+                 * */
+                httpServletResponse.sendRedirect("/errorPage?code=500");
+            }
+            else {
+                /*
+                 * Something went wrong
+                 * redirect user to error
+                 *
+                 * */
+                httpServletResponse.sendRedirect("/errorPage?code=");
+            }
         }
-        return returnMsg;
     }
 
-    @RequestMapping(value = "/getCustomerById",
+/*    @RequestMapping(value = "/ajax/getCustomerById",
             method = RequestMethod.GET)
     public @ResponseBody
     ResponseEntity<String> login(
@@ -121,7 +156,7 @@ public class IndexController {
         } catch (Exception e) {
             return ResponseEntity.status(500).headers(headers).body(e.getMessage());
         }
-    }
+    }*/
 
     @Nullable
     private boolean createAuth(User user){

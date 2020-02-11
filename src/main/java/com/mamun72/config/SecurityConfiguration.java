@@ -17,10 +17,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/resources/**").permitAll()
                 .antMatchers("/userlogin/**").permitAll()
+                .antMatchers("/errorPage/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().disable()
-                .logout().logoutUrl("logout")
+                .logout().logoutUrl("logout").deleteCookies("JAVA_COOKIE")
                 .permitAll();
     }
 }

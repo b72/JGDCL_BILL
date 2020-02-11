@@ -14,6 +14,14 @@
     <div th:case="*">
         <script th:replace="fragments/header :: banner"></script>
         <script th:replace="fragments/menu :: menu"></script>
+        <div class="clearfix"></div>
+        <div class="page">
+            <form id="get-bill" method="post" action="#">
+                <script th:replace="fragments/input ::formField ('Customer ID', '', 'form-control', 'Enter Customer ID')"></script>
+                <script th:replace="fragments/input ::csrf"></script>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
     </div>
 </div>
 <script th:replace="fragments/header :: jquery"></script>
