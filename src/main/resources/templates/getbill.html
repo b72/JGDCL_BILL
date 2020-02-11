@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title th:text="${title}"></title>
     <script th:replace="fragments/header :: bootstrap"></script>
+    <script th:replace="fragments/header :: jquery"></script>
 </head>
 <body>
 <div th:switch="${user}">
@@ -16,14 +17,38 @@
         <script th:replace="fragments/menu :: menu"></script>
         <div class="clearfix"></div>
         <div class="page">
-            <form id="get-bill" method="post" action="#">
-                <script th:replace="fragments/input ::formField ('Customer ID', '', 'form-control', 'Enter Customer ID')"></script>
-                <script th:replace="fragments/input ::csrf"></script>
-                <button type="submit" class="btn btn-primary">Submit</button>
-            </form>
+            <div class="row">
+                <div class="col-md-5">
+                    <form id="get-bill" method="GET" action="#">
+                        <script th:replace="fragments/input ::formField ('Customer ID', '', 'form-control', 'Enter Customer ID')"></script>
+                        <script th:replace="fragments/input ::csrf"></script>
+                        <button type="submit" class="btn btn-primary" >Submit</button>
+                    </form>
+                </div>
+                <div class="col-md-7">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th scope="col">Field</th>
+                            <th scope="col">Values</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="student: ${students} ">
+                            <td th:utext="${student.id}"></td>
+                            <td th:utext="${student.firstName}"></td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                    <label id="testing">Data: </label>
+                    <input id="test-data">
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<script th:replace="fragments/header :: jquery"></script>
+<script th:src="@{/js/ajax_call.js}"></script>
+
 </body>
 </html>
