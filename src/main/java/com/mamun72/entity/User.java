@@ -8,7 +8,7 @@ import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "USER_TABLE_BILL")
+@Table(name = "SSO_USER")
 public class User implements Serializable {
 
     public User() {

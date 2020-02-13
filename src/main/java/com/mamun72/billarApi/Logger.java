@@ -1,6 +1,14 @@
 package com.mamun72.billarApi;
 
-public class ApiLog {
+import com.mamun72.entity.ApiLog;
+import com.mamun72.service.ApiLogService;
+import org.springframework.beans.factory.annotation.Autowired;
+
+public class Logger {
+
+    @Autowired
+    ApiLogService apiLogService;
+
 
     private String request;
     private String response;
@@ -28,6 +36,14 @@ public class ApiLog {
 
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+
+    public void log(){
+        ApiLog apiLog = new ApiLog();
+        apiLog.setLogId(this.identifier);
+        apiLog.setRequest(this.request);
+        apiLog.setResponse(this.response);
+        System.out.println(apiLogService.saveLog(apiLog).toString());
     }
 
     @Override

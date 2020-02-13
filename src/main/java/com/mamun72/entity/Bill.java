@@ -30,6 +30,8 @@ public class Bill {
 
     @Column(name = "status", nullable = true, length = 50)
     private String status;
+    @Column(name = "requestUrl", nullable = false, length = 255)
+    private String requestUrl;
 
     public Long getCustomerId() {
         return customerId;
@@ -95,17 +97,26 @@ public class Bill {
         this.status = status;
     }
 
+    public String getRequestUrl() {
+        return requestUrl;
+    }
+
+    public void setRequestUrl(String requestUrl) {
+        this.requestUrl = requestUrl;
+    }
+
     @Override
     public String toString() {
         return "Bill{" +
                 "customerId=" + customerId +
                 ", customerName='" + customerName + '\'' +
-                ", monYear='" + monYear + '\'' +
+                ", monYear=" + monYear +
                 ", billAmount=" + billAmount +
                 ", surcharge=" + surcharge +
                 ", paybleAmount=" + paybleAmount +
                 ", billcount=" + billcount +
                 ", status='" + status + '\'' +
+                ", requestUrl='" + requestUrl + '\'' +
                 '}';
     }
 }

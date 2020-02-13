@@ -91,7 +91,11 @@ public class DashboardController {
                 } else
                     return ResponseEntity.badRequest().headers(sentHeaders).body(res);
             } catch (Exception e) {
+                System.out.println("Exception" + e.toString());
                 return ResponseEntity.status(500).headers(sentHeaders).body(e.getMessage());
+            }
+            finally {
+                return ResponseEntity.status(500).headers(sentHeaders).body("Something went wrong!!");
             }
         }else{
             return ResponseEntity.status(400).headers(sentHeaders).body("X-CSRF-TOKEN not found or mismatch");

@@ -1,12 +1,21 @@
 package com.mamun72.billarApi;
 
+import com.mamun72.entity.ApiLog;
+import com.mamun72.service.ApiLogService;
 import okhttp3.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.stereotype.Component;
 
 import javax.net.ssl.*;
 import java.security.cert.CertificateException;
+import java.util.Date;
 
-
+@Component
 public class JgdlApi {
+
+    @Autowired
+    ApiLogService apiLogService;
 
     private String baseUrl;
 
@@ -17,6 +26,8 @@ public class JgdlApi {
     private String user;
 
     private String password;
+
+    private Logger apiLog;
 
     public JgdlApi(){
         this.baseUrl = "https://103.94.135.203:8083/api/";
@@ -34,6 +45,11 @@ public class JgdlApi {
                 .build();
         Response response = client.newCall(request).execute();
         String res = response.body().string();
+        ApiLog apiLog = new ApiLog();
+        apiLog.setResponse(res);
+        apiLog.setLogId(customerId);
+        apiLog.setRequest(finalUrl);
+        keepApiLog(apiLog);
         response.body().close();
         return res;
     }
@@ -96,7 +112,11 @@ public class JgdlApi {
         }
     }
 
-    private void keepApiLog()
+    private void keepApiLog(ApiLog apiLog)
     {
+        apiLog.setId(new Date().getTime());
+        apiLogService.saveLog(apiLog);
+        System.out.println(apiLog.toString());
+        System.out.println("SAVE CALL");
     }
 }

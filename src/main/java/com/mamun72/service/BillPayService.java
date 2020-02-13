@@ -13,4 +13,8 @@ public class BillPayService {
         return billRepo.findAll();
     }
 
+    public Bill saveBill(Bill bill){
+        return billRepo.save(bill);
+    }
+
 }

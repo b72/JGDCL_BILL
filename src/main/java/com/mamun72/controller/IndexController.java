@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mamun72.entity.Bill;
 import com.mamun72.entity.User;
 import com.mamun72.service.BillPayService;
-import com.mamun72.service.TestTableService;
 import com.mamun72.service.UserService;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,18 +28,8 @@ import java.util.Optional;
 public class IndexController {
 
     @Autowired
-    TestTableService testTableService;
-    @Autowired
     UserService userService;
 
-  @RequestMapping(value = "/entry", method = RequestMethod.GET)
-    public String index(Model model) {
-        for (Object obj : testTableService.getAll()) {
-            System.out.println(obj.toString());
-        }
-        model.addAttribute("tests", testTableService.getAll());
-        return "test";
-    }
 
     @Autowired
     BillPayService billPayService;
