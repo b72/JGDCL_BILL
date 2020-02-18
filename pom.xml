@@ -32,20 +32,20 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-       <!-- <dependency>
+        <dependency>
             <groupId>com.oracle.ojdbc</groupId>
             <artifactId>ojdbc8</artifactId>
             <scope>runtime</scope>
-        </dependency>-->
+        </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/sqljdbc4 -->
-        <!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
+       <!-- &lt;!&ndash; https://mvnrepository.com/artifact/com.microsoft.sqlserver/sqljdbc4 &ndash;&gt;
+        &lt;!&ndash; https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc &ndash;&gt;
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
             <version>8.1.0.jre8-preview</version>
             <scope>runtime</scope>
-        </dependency>
+        </dependency>-->
 
 
 

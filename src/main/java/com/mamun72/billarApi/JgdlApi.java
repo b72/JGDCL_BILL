@@ -1,23 +1,28 @@
 package com.mamun72.billarApi;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mamun72.entity.ApiLog;
+import com.mamun72.entity.Bill;
 import com.mamun72.service.ApiLogService;
 import okhttp3.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
+import okio.Buffer;
 import org.springframework.stereotype.Component;
 
 import javax.net.ssl.*;
+import java.io.IOException;
 import java.security.cert.CertificateException;
-import java.util.Date;
 
 @Component
 public class JgdlApi {
 
-    @Autowired
-    ApiLogService apiLogService;
+
+    private ApiLogService apiLogService;
+
+    private Boolean activeLog;
 
     private String baseUrl;
+
+    private String finalUrl;
 
     private String header;
 
@@ -27,45 +32,68 @@ public class JgdlApi {
 
     private String password;
 
-    private Logger apiLog;
+    private String credentials;
 
-    public JgdlApi(){
-        this.baseUrl = "https://103.94.135.203:8083/api/";
-        this.user = "nbl";
-        this.password = "Jn@bT1D51";
+    private RequestBody body;
+
+    public JgdlApi() {
+        this.baseUrl = JgdlConfig.getBaseUrl();
+        this.user = JgdlConfig.getUserName();
+        this.password = JgdlConfig.getPassword();
+        this.activeLog = false;
+        this.credentials = Credentials.basic(this.user, this.password);
     }
 
     public String getBillInfo(String customerId) throws Exception {
-        String finalUrl = this.baseUrl + "getBillInfo?customerId=" + customerId;
+        HttpUrl.Builder urlBuilder
+                = HttpUrl.parse(this.baseUrl + JgdlConfig.getGetCustomer()).newBuilder();
+        urlBuilder.addQueryParameter("customerId", customerId);
+
+        this.finalUrl = urlBuilder.build().toString();
         OkHttpClient client = getUnsafeOkHttpClient();
+
         Request request = new Request.Builder()
-                .url(finalUrl)
+                .url(this.finalUrl)
                 .method("GET", null)
-                .addHeader("Authorization", "Basic bmJsOkpuQGJUMUQ1MQ==")
+                .addHeader("Authorization", this.credentials)
                 .build();
         Response response = client.newCall(request).execute();
         String res = response.body().string();
-        ApiLog apiLog = new ApiLog();
-        apiLog.setResponse(res);
-        apiLog.setLogId(customerId);
-        apiLog.setRequest(finalUrl);
-        keepApiLog(apiLog);
+
+        if (this.activeLog) {
+            ApiLog apiLog = new ApiLog();
+            apiLog.setResponse(res);
+            apiLog.setLogId(customerId);
+            apiLog.setRequest(finalUrl);
+            keepApiLog(apiLog);
+        }
         response.body().close();
         return res;
     }
 
     public String payBill(PayBill payBill) throws Exception {
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-        RequestBody body = RequestBody.create(payBill.toString(), JSON);
-        String finalUrl = this.baseUrl + "api/payment";
+        ObjectMapper mapper = new ObjectMapper();
+        String postData = mapper.writeValueAsString(payBill);
+        this.body = RequestBody.create(postData, JSON);
+        this.finalUrl = this.baseUrl + JgdlConfig.getPayment();
         OkHttpClient client = getUnsafeOkHttpClient();
         Request request = new Request.Builder()
-                .url(finalUrl)
-                .post(body)
-                .addHeader("Authorization", "Basic bmJsOkpuQGJUMUQ1MQ==")
+                .url(this.finalUrl)
+                .post(this.body)
+                .addHeader("Authorization", this.credentials)
                 .build();
         Response response = client.newCall(request).execute();
         String res = response.body().string();
+
+        if (this.activeLog) {
+            ApiLog apiLog = new ApiLog();
+            apiLog.setResponse(res);
+            apiLog.setLogId(payBill.getCustomerId().toString());
+            apiLog.setRequest("{\"url\":\"" + this.finalUrl + "\", \"body\":" + bodyToString(this.body)  + "}");
+            keepApiLog(apiLog);
+        }
+
         response.body().close();
         return res;
     }
@@ -73,7 +101,7 @@ public class JgdlApi {
     private static OkHttpClient getUnsafeOkHttpClient() {
         try {
             // Create a trust manager that does not validate certificate chains
-            final TrustManager[] trustAllCerts = new TrustManager[] {
+            final TrustManager[] trustAllCerts = new TrustManager[]{
                     new X509TrustManager() {
                         @Override
                         public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
@@ -97,7 +125,7 @@ public class JgdlApi {
             final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
-            builder.sslSocketFactory(sslSocketFactory, (X509TrustManager)trustAllCerts[0]);
+            builder.sslSocketFactory(sslSocketFactory, (X509TrustManager) trustAllCerts[0]);
             builder.hostnameVerifier(new HostnameVerifier() {
                 @Override
                 public boolean verify(String hostname, SSLSession session) {
@@ -112,11 +140,98 @@ public class JgdlApi {
         }
     }
 
-    private void keepApiLog(ApiLog apiLog)
-    {
-        apiLog.setId(new Date().getTime());
+    public ApiLogService getApiLogService() {
+        return apiLogService;
+    }
+
+    public void setApiLogService(ApiLogService apiLogService) {
+        this.apiLogService = apiLogService;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
+
+    public String getHeader() {
+        return header;
+    }
+
+    public void setHeader(String header) {
+        this.header = header;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Boolean getActiveLog() {
+        return activeLog;
+    }
+
+    public void setActiveLog(Boolean activeLog) {
+        this.activeLog = activeLog;
+    }
+
+    public String getFinalUrl() {
+        return finalUrl;
+    }
+
+    public void setFinalUrl(String finalUrl) {
+        this.finalUrl = finalUrl;
+    }
+
+    public String getCredentials() {
+        return credentials;
+    }
+
+    public void setCredentials(String credentials) {
+        this.credentials = credentials;
+    }
+
+    public RequestBody getBody() {
+        return body;
+    }
+
+    public void setBody(RequestBody body) {
+        this.body = body;
+    }
+
+    private void keepApiLog(ApiLog apiLog) {
         apiLogService.saveLog(apiLog);
-        System.out.println(apiLog.toString());
-        System.out.println("SAVE CALL");
+    }
+
+    private static String bodyToString(final RequestBody request) {
+
+        try {
+            Buffer buffer = new Buffer();
+            request.writeTo(buffer);
+            return buffer.readUtf8();
+        } catch (final Exception e) {
+            return e.getMessage();
+        }
     }
 }

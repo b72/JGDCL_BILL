@@ -1,15 +1,23 @@
 package com.mamun72.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Timestamp;
 
 @Entity
 public class ApiLog implements Serializable {
     private static final long serialVersionUID = 1L;
+
     @Id
-    @Column(name = "IDENTIFIER", nullable = false, unique = true)
-    private Long Id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ApiLogIdGenerator")
+    @SequenceGenerator(name = "ApiLogIdGenerator")
+    private long Id;
+
+    @CreationTimestamp
+    @Column(name = "createdAt", nullable = false, unique = true)
+    private Timestamp createdAt;
 
     @Column(name = "logId", length = 255, unique = false)
     private String logId;
@@ -49,7 +57,7 @@ public class ApiLog implements Serializable {
         return Id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         Id = id;
     }
 
