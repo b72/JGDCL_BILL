@@ -1,16 +1,18 @@
 package com.mamun72.billarApi;
 
-class JgdlConfig {
+public class JgdlConfig {
 
-    // private static final String baseUrl = "https://103.94.135.203:8083";
-    private static final String baseUrl = "https://jsonplaceholder.typicode.com";
+     private static final String baseUrl = "https://103.94.135.203:8083";
+    //private static final String baseUrl = "https://jsonplaceholder.typicode.com";
     private static final String userName = "nbl";
     private static final String password = "Jn@bT1D51";
-    //private static final String getCustomer = "/api/getBillInfo";
-    private static final String getCustomer = "/comments";
-    //private static final String payment = "/api/payment";
-    private static final String payment = "/posts";
+    private static final String getCustomer = "/api/getBillInfo";
+    //private static final String getCustomer = "/comments";
+    private static final String payment = "/api/payment";
+    //private static final String payment = "/posts";
     private static final String getAllBills = "/post";
+
+    private static final String bankName = "NBL";
 
     public static String getBaseUrl() {
         return baseUrl;
@@ -34,5 +36,9 @@ class JgdlConfig {
 
     public static String getGetAllBills() {
         return getAllBills;
+    }
+
+    public static String getBankName() {
+        return bankName;
     }
 }

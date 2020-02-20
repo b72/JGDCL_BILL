@@ -1,20 +1,28 @@
 package com.mamun72.entity;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
+
 import javax.persistence.*;
-import java.util.Date;
+import java.sql.Timestamp;
+import java.util.UUID;
 
 @Entity
 public class Bill {
     @Id
-    @GeneratedValue( strategy = GenerationType.AUTO)
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    @Column(name = "trxId", unique = true, nullable = false)
+    private String transactionId;
+
     @Column(name = "customerId")
     private Long customerId;
 
     @Column(name = "customerName", nullable = true, length = 100)
     private String customerName;
 
-    @Column(name = "monYear", nullable = true, length = 100)
-    private Date monYear;
+    @Column(name = "monYear", nullable = true, length = 255)
+    private String monYear;
 
     @Column(name = "billAmount", nullable = true, precision = 2)
     private Double billAmount;
@@ -28,10 +36,19 @@ public class Bill {
     @Column(name = "billcount", nullable = true)
     private Integer billcount;
 
-    @Column(name = "status", nullable = true, length = 50)
-    private String status;
-    @Column(name = "requestUrl", nullable = false, length = 255)
-    private String requestUrl;
+    @Column(name = "status", nullable = true, length = 2)
+    private Integer status;
+
+    @CreationTimestamp
+    @Column(name = "paidAt", nullable = false)
+
+    private Timestamp paidAt;
+    private String mobileNo;
+    private double paidAmount;
+    private String bankName;
+    private String jsdclTrxId;
+
+
 
     public Long getCustomerId() {
         return customerId;
@@ -49,11 +66,11 @@ public class Bill {
         this.customerName = customerName;
     }
 
-    public Date getMonYear() {
+    public String getMonYear() {
         return monYear;
     }
 
-    public void setMonYear(Date monYear) {
+    public void setMonYear(String monYear) {
         this.monYear = monYear;
     }
 
@@ -89,34 +106,79 @@ public class Bill {
         this.billcount = billcount;
     }
 
-    public String getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
-    public String getRequestUrl() {
-        return requestUrl;
+    public String getTransactionId() {
+        return transactionId;
     }
 
-    public void setRequestUrl(String requestUrl) {
-        this.requestUrl = requestUrl;
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public Timestamp getPaidAt() {
+        return paidAt;
+    }
+
+    public void setPaidAt(Timestamp paidAt) {
+        this.paidAt = paidAt;
+    }
+
+    public String getMobileNo() {
+        return mobileNo;
+    }
+
+    public void setMobileNo(String mobileNo) {
+        this.mobileNo = mobileNo;
+    }
+
+    public double getPaidAmount() {
+        return paidAmount;
+    }
+
+    public void setPaidAmount(double paidAmount) {
+        this.paidAmount = paidAmount;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
+    }
+
+    public String getJsdclTrxId() {
+        return jsdclTrxId;
+    }
+
+    public void setJsdclTrxId(String jsdclTrxId) {
+        this.jsdclTrxId = jsdclTrxId;
     }
 
     @Override
     public String toString() {
         return "Bill{" +
-                "customerId=" + customerId +
+                "transactionId=" + transactionId +
+                ", customerId=" + customerId +
                 ", customerName='" + customerName + '\'' +
                 ", monYear=" + monYear +
                 ", billAmount=" + billAmount +
                 ", surcharge=" + surcharge +
                 ", paybleAmount=" + paybleAmount +
                 ", billcount=" + billcount +
-                ", status='" + status + '\'' +
-                ", requestUrl='" + requestUrl + '\'' +
+                ", status=" + status +
+                ", paidAt=" + paidAt +
+                ", mobileNo='" + mobileNo + '\'' +
+                ", paidAmount=" + paidAmount +
+                ", bankName='" + bankName + '\'' +
+                ", jsdclTrxId='" + jsdclTrxId + '\'' +
                 '}';
     }
 }

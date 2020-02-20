@@ -2,14 +2,12 @@ package com.mamun72.billarApi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mamun72.entity.ApiLog;
-import com.mamun72.entity.Bill;
 import com.mamun72.service.ApiLogService;
 import okhttp3.*;
 import okio.Buffer;
 import org.springframework.stereotype.Component;
 
 import javax.net.ssl.*;
-import java.io.IOException;
 import java.security.cert.CertificateException;
 
 @Component
@@ -36,6 +34,8 @@ public class JgdlApi {
 
     private RequestBody body;
 
+    private Response response;
+
     public JgdlApi() {
         this.baseUrl = JgdlConfig.getBaseUrl();
         this.user = JgdlConfig.getUserName();
@@ -45,11 +45,13 @@ public class JgdlApi {
     }
 
     public String getBillInfo(String customerId) throws Exception {
+
         HttpUrl.Builder urlBuilder
                 = HttpUrl.parse(this.baseUrl + JgdlConfig.getGetCustomer()).newBuilder();
         urlBuilder.addQueryParameter("customerId", customerId);
 
         this.finalUrl = urlBuilder.build().toString();
+
         OkHttpClient client = getUnsafeOkHttpClient();
 
         Request request = new Request.Builder()
@@ -57,23 +59,20 @@ public class JgdlApi {
                 .method("GET", null)
                 .addHeader("Authorization", this.credentials)
                 .build();
-        Response response = client.newCall(request).execute();
-        String res = response.body().string();
+        this.response = client.newCall(request).execute();
 
-        if (this.activeLog) {
-            ApiLog apiLog = new ApiLog();
-            apiLog.setResponse(res);
-            apiLog.setLogId(customerId);
-            apiLog.setRequest(finalUrl);
-            keepApiLog(apiLog);
-        }
-        response.body().close();
+        String res = this.response.body().string();
+
+        keepApiLog(customerId);
+        this.response.body().close();
+
         return res;
     }
 
     public String payBill(PayBill payBill) throws Exception {
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         ObjectMapper mapper = new ObjectMapper();
+        payBill.setBankName(JgdlConfig.getBankName());
         String postData = mapper.writeValueAsString(payBill);
         this.body = RequestBody.create(postData, JSON);
         this.finalUrl = this.baseUrl + JgdlConfig.getPayment();
@@ -83,18 +82,13 @@ public class JgdlApi {
                 .post(this.body)
                 .addHeader("Authorization", this.credentials)
                 .build();
-        Response response = client.newCall(request).execute();
-        String res = response.body().string();
+        this.response = client.newCall(request).execute();
 
-        if (this.activeLog) {
-            ApiLog apiLog = new ApiLog();
-            apiLog.setResponse(res);
-            apiLog.setLogId(payBill.getCustomerId().toString());
-            apiLog.setRequest("{\"url\":\"" + this.finalUrl + "\", \"body\":" + bodyToString(this.body)  + "}");
-            keepApiLog(apiLog);
-        }
+        String res = this.response.body().string();
 
-        response.body().close();
+        keepApiLog(payBill.getTransactionId());
+        this.response.body().close();
+
         return res;
     }
 
@@ -216,12 +210,25 @@ public class JgdlApi {
         return body;
     }
 
+    /**
+     * @return String
+     */
+    public String getStringBody() {
+        return "{\"url\":\"" + this.finalUrl + "\", \"body\":" + bodyToString(this.body) + "}";
+    }
+
     public void setBody(RequestBody body) {
         this.body = body;
     }
 
-    private void keepApiLog(ApiLog apiLog) {
-        apiLogService.saveLog(apiLog);
+    private void keepApiLog(String logId) {
+        if (this.activeLog) {
+            ApiLog apiLog = new ApiLog();
+            apiLog.setResponse(this.response.toString());
+            apiLog.setLogId(logId);
+            apiLog.setRequest(getStringBody());
+            apiLogService.saveLog(apiLog);
+        }
     }
 
     private static String bodyToString(final RequestBody request) {

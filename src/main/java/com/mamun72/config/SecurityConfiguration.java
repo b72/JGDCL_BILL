@@ -24,7 +24,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin().disable()
-                .logout().logoutUrl("logout").deleteCookies("JAVA_COOKIE")
+                .logout().logoutUrl("logout").invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
                 .permitAll();
     }
 }
