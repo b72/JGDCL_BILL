@@ -34,7 +34,7 @@ public class JgdlApi {
 
     private RequestBody body;
 
-    private Response response;
+    private String response;
 
     public JgdlApi() {
         this.baseUrl = JgdlConfig.getBaseUrl();
@@ -59,17 +59,19 @@ public class JgdlApi {
                 .method("GET", null)
                 .addHeader("Authorization", this.credentials)
                 .build();
-        this.response = client.newCall(request).execute();
+        Response response = client.newCall(request).execute();
 
-        String res = this.response.body().string();
+        this.response = response.body().string();
+
+        response.body().close();
 
         keepApiLog(customerId);
-        this.response.body().close();
 
-        return res;
+
+        return this.response;
     }
 
-    public String payBill(PayBill payBill) throws Exception {
+    public String payBill(PayBillRequest payBill) throws Exception {
         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
         ObjectMapper mapper = new ObjectMapper();
         payBill.setBankName(JgdlConfig.getBankName());
@@ -82,14 +84,15 @@ public class JgdlApi {
                 .post(this.body)
                 .addHeader("Authorization", this.credentials)
                 .build();
-        this.response = client.newCall(request).execute();
+        Response response = client.newCall(request).execute();
 
-        String res = this.response.body().string();
+        this.response = response.body().string();
 
         keepApiLog(payBill.getTransactionId());
-        this.response.body().close();
 
-        return res;
+        response.body().close();
+
+        return this.response;
     }
 
     private static OkHttpClient getUnsafeOkHttpClient() {
@@ -223,8 +226,9 @@ public class JgdlApi {
 
     private void keepApiLog(String logId) {
         if (this.activeLog) {
+            System.out.println("Logged from API Lib");
             ApiLog apiLog = new ApiLog();
-            apiLog.setResponse(this.response.toString());
+            apiLog.setResponse(this.response);
             apiLog.setLogId(logId);
             apiLog.setRequest(getStringBody());
             apiLogService.saveLog(apiLog);

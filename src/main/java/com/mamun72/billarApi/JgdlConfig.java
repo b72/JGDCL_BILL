@@ -14,6 +14,8 @@ public class JgdlConfig {
 
     private static final String bankName = "NBL";
 
+    private static final int[] paidStatus = {1,2};
+
     public static String getBaseUrl() {
         return baseUrl;
     }
@@ -40,5 +42,13 @@ public class JgdlConfig {
 
     public static String getBankName() {
         return bankName;
+    }
+
+    public static int getUnPaidStatus(){
+        return paidStatus[0];
+    }
+
+    public static int getPaidStatus(){
+        return paidStatus[1];
     }
 }

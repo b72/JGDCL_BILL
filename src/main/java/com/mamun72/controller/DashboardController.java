@@ -1,8 +1,9 @@
 package com.mamun72.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mamun72.billarApi.JgdlApi;
 import com.mamun72.billarApi.JgdlConfig;
-import com.mamun72.billarApi.PayBill;
+import com.mamun72.billarApi.PayBillRequest;
 import com.mamun72.entity.ApiLog;
 import com.mamun72.entity.Bill;
 import com.mamun72.entity.User;
@@ -98,26 +99,30 @@ public class DashboardController {
         sentHeaders.add(HttpHeaders.CACHE_CONTROL, "no-cache");
         sentHeaders.add(HttpHeaders.CONNECTION, "close");
         sentHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
+        if (getLoggedInUser() == null) {
+            return ResponseEntity.status(403).headers(sentHeaders).body("Session timeout!");
+        }
         if (csrf_token.equals(new HttpSessionCsrfTokenRepository().loadToken(request).getToken())) {
             JgdlApi jgdlApi = new JgdlApi();
             jgdlApi.setApiLogService(apiLogService);
             jgdlApi.setActiveLog(true);
             try {
                 String res = jgdlApi.getBillInfo(customerId);
-
                 JsonParser springParser = JsonParserFactory.getJsonParser();
                 Map<String, Object> map = springParser.parseMap(res);
-
                 if ((int) map.get("status") == 200) {
-                    // process request & do other stuffs
+                    String trxId = saveBill(map).getTransactionId();
+                    map.put("transactionId", trxId);
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    String json = objectMapper.writeValueAsString(map);
                     status = 200;
-                    response = res;
+                    response = json;
                 } else {
                     status = 404;
                     response = res;
                 }
             } catch (Exception e) {
-                System.out.println(e.toString());
+                System.out.println("getCustomer " + e.toString());
                 ApiLog apiLog = new ApiLog();
                 apiLog.setLogId(customerId);
                 apiLog.setRequest(jgdlApi.getStringBody());
@@ -128,7 +133,7 @@ public class DashboardController {
                 response = e.getMessage();
             }
         } else {
-            status = 405;
+            status = 401;
             response = "X-CSRF-TOKEN not found or mismatch";
         }
         return ResponseEntity.status(status).headers(sentHeaders).body(response);
@@ -140,49 +145,71 @@ public class DashboardController {
      * param json body
      * */
     @RequestMapping(value = "/ajax/payment",
-            method = RequestMethod.POST)
+            method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     public @ResponseBody
-    ResponseEntity<String> payBill(@RequestBody Map<String, Object> payload) {
+    ResponseEntity<String> payBill(
+            HttpServletRequest request,
+            @RequestBody Map<String, Object> payload,
+            @RequestHeader(name = "X-CSRF-TOKEN") String csrf_token) {
         Integer status = 200;
         String response = null;
         HttpHeaders sentHeaders = new HttpHeaders();
         sentHeaders.add(HttpHeaders.CACHE_CONTROL, "no-cache");
         sentHeaders.add(HttpHeaders.CONNECTION, "close");
         sentHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
-       JgdlApi jgdlApi = new JgdlApi();
-        jgdlApi.setApiLogService(apiLogService);
-        jgdlApi.setActiveLog(true);
-        PayBill payBill = saveBill(payload);
-        try {
-            String res = jgdlApi.payBill(payBill);
-            JsonParser springParser = JsonParserFactory.getJsonParser();
-            Map<String, Object> map = springParser.parseMap(res);
-            response = res;
-            status = 200;
-        } catch (Exception e) {
-            Bill bill = new Bill();
-            bill.setTransactionId(payBill.getTransactionId());
-            bill.setStatus(1);
-            billPayService.saveBill(bill);
-            response = e.getMessage();
-            status = 500;
-            ApiLog apilog = new ApiLog();
-            apilog.setLogId(payBill.getTransactionId());
-            apilog.setRequest(jgdlApi.getStringBody());
-            apilog.setResponse(e.getMessage());
-            keepApiLog(apilog);
+        User logged = getLoggedInUser();
+        System.out.println(logged.toString());
+        if (logged == null) {
+            return ResponseEntity.status(403).headers(sentHeaders).body("Session timeout!");
+        }
+        if (csrf_token.equals(new HttpSessionCsrfTokenRepository().loadToken(request).getToken())) {
+            JgdlApi jgdlApi = new JgdlApi();
+            jgdlApi.setApiLogService(apiLogService);
+            jgdlApi.setActiveLog(true);
+            try {
+                String trxId = payload.get("transactionId").toString();
+                PayBillRequest payBillRequest = new PayBillRequest();
+                payBillRequest.setTransactionId(trxId);
+                payBillRequest.setCustomerId(payload.get("customerId").toString());
+                payBillRequest.setPaidAmount(Double.parseDouble(payload.get("paidAmount").toString()));
+                payBillRequest.setMobileNo(payload.get("mobileNo").toString());
+
+                String res = jgdlApi.payBill(payBillRequest);
+                JsonParser springParser = JsonParserFactory.getJsonParser();
+                Map<String, Object> map = springParser.parseMap(res);
+                if ((int) map.get("status") == 200) {
+                    status = 200;
+                    int update = updateBill(map.get("transactionId").toString(), payBillRequest);
+                    System.out.println(update);
+                    response = res;
+                } else {
+                    status = 400;
+                    billPayService.updateStatus(payBillRequest, map.get("transactionId").toString(), JgdlConfig.getUnPaidStatus());
+                    response = res;
+                }
+
+            } catch (Exception e) {
+
+                response = e.getMessage();
+                status = 500;
+                ApiLog apilog = new ApiLog();
+                apilog.setLogId("1234");
+                apilog.setRequest(jgdlApi.getStringBody());
+                apilog.setResponse(e.getMessage());
+                keepApiLog(apilog);
+            }
+        } else {
+            status = 401;
+            response = "X-CSRF-TOKEN not found or mismatch";
         }
         return ResponseEntity.status(status).headers(sentHeaders).body(response);
     }
 
 
     private User getLoggedInUser() {
-        try {
-            User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            return user;
-        } catch (Exception ex) {
-            return null;
-        }
+
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return user;
     }
 
     private void keepApiLog(ApiLog apiLog) {
@@ -190,29 +217,25 @@ public class DashboardController {
         System.out.println("SAVE CALL FROM CONTROLLER");
     }
 
-    private PayBill saveBill(Map<String, Object> payload) {
+    private Bill saveBill(Map<String, Object> map) {
         Bill bill = new Bill();
-        bill.setCustomerId(Long.parseLong(payload.get("customerId").toString()));
-        bill.setCustomerName(payload.get("customerName").toString());
-        bill.setMonYear(payload.get("monyear").toString());
-        bill.setBillAmount(Double.parseDouble(payload.get("billAmount").toString()));
-        bill.setPaybleAmount(Double.parseDouble(payload.get("paybleAmount").toString()));
-        bill.setBillcount(Integer.parseInt(payload.get("billcount").toString()));
-        bill.setPaidAmount(Double.parseDouble(payload.get("paidAmount").toString()));
-        bill.setMobileNo(payload.get("mobileNo").toString());
+        bill.setCustomerId(Long.parseLong(map.get("customerId").toString()));
+        bill.setCustomerName(map.get("customerName").toString());
+        bill.setMonYear(map.get("monyear").toString());
+        bill.setBillAmount(Double.parseDouble(map.get("billAmount").toString()));
+        bill.setPaybleAmount(Double.parseDouble(map.get("paybleAmount").toString()));
+        bill.setBillcount(Integer.parseInt(map.get("billcount").toString()));
+        bill.setPaidAmount(0);
+        bill.setMobileNo(null);
+        bill.setStatus(JgdlConfig.getUnPaidStatus());
         bill.setBankName(JgdlConfig.getBankName());
-        bill.setSurcharge(Double.parseDouble(payload.get("surcharge").toString()));
-
+        bill.setSurcharge(Double.parseDouble(map.get("surcharge").toString()));
         Bill saved = billPayService.saveBill(bill);
+        return saved;
+    }
 
-        PayBill payBill = new PayBill();
-        payBill.setBankName(saved.getBankName());
-        payBill.setMobileNo(saved.getMobileNo());
-        payBill.setTransactionId(saved.getTransactionId());
-        payBill.setPaidAmount(saved.getPaidAmount());
-        payBill.setCustomerId(saved.getCustomerId().toString());
-
-        return payBill;
+    private int updateBill(String apiTrxId, PayBillRequest payBillRequest) {
+        return billPayService.updateStatus(payBillRequest, apiTrxId, JgdlConfig.getPaidStatus());
     }
 
 

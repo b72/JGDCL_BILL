@@ -1,12 +1,17 @@
 ﻿.page{
     margin: 0 auto;
     width: 960px;
-    height: 480px;
     border: 1px solid black;
 }
 #get-bill{
     margin: 10px 10px;
+    line-height:1.0 !important
 }
+
 .loader{
     display: none;
+}
+.results {
+    margin: 10px 0px 0px 0px;
+    line-height:1.0 !important
 }

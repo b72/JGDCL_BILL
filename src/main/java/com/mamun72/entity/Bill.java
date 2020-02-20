@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.util.UUID;
 
 @Entity
+@Table(name = "bill")
 public class Bill {
     @Id
     @GeneratedValue(generator="system-uuid")
@@ -41,8 +42,8 @@ public class Bill {
 
     @CreationTimestamp
     @Column(name = "paidAt", nullable = false)
-
     private Timestamp paidAt;
+
     private String mobileNo;
     private double paidAmount;
     private String bankName;

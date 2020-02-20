@@ -1,6 +1,6 @@
 package com.mamun72.billarApi;
 
-public class PayBill {
+public class PayBillRequest {
     private String customerId;
     private Double paidAmount;
     private String bankName;
@@ -49,7 +49,7 @@ public class PayBill {
 
     @Override
     public String toString() {
-        return "PayBill{" +
+        return "PayBillRequest{" +
                 "customerId='" + customerId + '\'' +
                 ", paidAmount=" + paidAmount +
                 ", bankName='" + bankName + '\'' +

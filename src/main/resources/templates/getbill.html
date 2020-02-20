@@ -17,29 +17,47 @@
             <script th:replace="fragments/header :: banner"></script>
             <script th:replace="fragments/menu :: menu"></script>
             <div class="clearfix"></div>
-            <div class="row">
-                <div class="col-md-5">
-                    <form id="get-bill" method="GET" action="#">
-                        <script th:replace="fragments/input ::formField ('Customer ID', '', 'form-control', 'Enter Customer ID')"></script>
-                        <script th:replace="fragments/input ::csrf"></script>
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </form>
-                </div>
-                <div class="col-md-7 results">
-                    <div class="text-center">
-                        <img src="images/progress-spinner.gif" class="img-fluid loader" alt="">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-5">
+                        <form id="get-bill" method="GET" action="#">
+                            <script th:replace="fragments/input ::formField ('Customer ID', '', 'form-control', 'Enter Customer ID')"></script>
+                            <script th:replace="fragments/input ::csrf"></script>
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                        <div class="text-center">
+                            <img size="40" src="images/progress-spinner.gif" class="img-fluid pay-information-loader" alt="">
+                        </div>
+                        <div>
+                            <label for="pay-information"> <span id="pay-information"> Payment Information </span>
+                            </label>
+                            <hr>
+                        </div>
+                        <table class="table table-striped">
+                            <tbody class="ajax-pay-result"></tbody>
+                        </table>
                     </div>
-                    <table class="table table-striped">
-                        <tbody class="ajax-result">
-                        </tbody>
-                    </table>
+                    <div class="col-md-7 results">
+                        <div class="text-center">
+                            <img src="images/progress-spinner.gif" class="img-fluid loader" alt="">
+                        </div>
+                        <form id="pay-bill" method="post" action="#">
+                            <div>
+                                <label for="bill-information"> <span> Bill Information </span>
+                                </label>
+                                <hr>
+                            </div>
+                            <table class="table table-striped">
+                                <tbody class="ajax-result"></tbody>
+                            </table>
+                        </form>
+                    </div>
                 </div>
             </div>
+            <script th:replace="fragments/header :: footer"></script>
         </div>
-        <script th:replace="fragments/header :: footer"></script>
     </div>
-</div>
-<script th:src="@{/js/ajax_call.js}"></script>
+    <script th:src="@{/js/ajax_call.js}"></script>
 
 </body>
 </html>
