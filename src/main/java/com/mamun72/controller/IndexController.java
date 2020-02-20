@@ -34,24 +34,6 @@ public class IndexController {
     @Autowired
     BillPayService billPayService;
 
-    @RequestMapping(value = "/bill", method = RequestMethod.GET)
-    public String bill(Model model) {
-        for (Object obj : billPayService.getAllBills()) {
-            System.out.println(obj.toString());
-        }
-        model.addAttribute("bills", billPayService.getAllBills());
-        return "index";
-    }
-
-    @RequestMapping(value = "/addBill", method = RequestMethod.GET)
-    public String addBill(Bill bill) {
-        return "addBill";
-    }
-
-    @RequestMapping(value = "/saveBill", method = RequestMethod.POST)
-    public String saveBill() {
-        return "index";
-    }
 
     @RequestMapping(value = "/userlogin", method = RequestMethod.GET)
     public
@@ -114,32 +96,6 @@ public class IndexController {
             }
         }
     }
-
-/*    @RequestMapping(value = "/ajax/getCustomerById",
-            method = RequestMethod.GET)
-    public @ResponseBody
-    ResponseEntity<String> login(
-            @RequestParam("customerId") String customerId, HttpSession httpSession) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CACHE_CONTROL, "no-cache");
-        headers.add(HttpHeaders.CONNECTION, "close");
-        headers.add(HttpHeaders.CONTENT_TYPE, "application/json");
-        System.out.println(httpSession.getAttribute("USER").toString());
-        try {
-            JgdlApi jgdlApi = new JgdlApi();
-            String res = jgdlApi.getBillInfo(customerId);
-            JsonParser springParser = JsonParserFactory.getJsonParser();
-            Map<String, Object> map = springParser.parseMap(res);
-            if (map.get("status") == "200") {
-                // process request & do other stuffs
-                return ResponseEntity.ok().headers(headers).body(res);
-            } else
-                return ResponseEntity.badRequest().headers(headers).body(res);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).headers(headers).body(e.getMessage());
-        }
-    }*/
-
     @Nullable
     private boolean createAuth(User user){
         Authentication authentication = new UsernamePasswordAuthenticationToken(user, null,

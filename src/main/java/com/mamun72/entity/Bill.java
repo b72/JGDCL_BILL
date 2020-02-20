@@ -2,6 +2,7 @@ package com.mamun72.entity;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -17,7 +18,7 @@ public class Bill {
     private String transactionId;
 
     @Column(name = "customerId")
-    private Long customerId;
+    private String customerId;
 
     @Column(name = "customerName", nullable = true, length = 100)
     private String customerName;
@@ -41,8 +42,41 @@ public class Bill {
     private Integer status;
 
     @CreationTimestamp
-    @Column(name = "paidAt", nullable = false)
+    @Column(name = "createdAt", nullable = false)
+    private Timestamp createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updatedAt", nullable = true)
+    private Timestamp updatedAt;
+
+    @Column(name = "paidAt", nullable = true)
     private Timestamp paidAt;
+
+    private String paidBy;
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Timestamp getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getPaidBy() {
+        return paidBy;
+    }
+
+    public void setPaidBy(String paidBy) {
+        this.paidBy = paidBy;
+    }
 
     private String mobileNo;
     private double paidAmount;
@@ -51,11 +85,11 @@ public class Bill {
 
 
 
-    public Long getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(Long customerId) {
+    public void setCustomerId(String customerId) {
         this.customerId = customerId;
     }
 
@@ -166,16 +200,19 @@ public class Bill {
     @Override
     public String toString() {
         return "Bill{" +
-                "transactionId=" + transactionId +
+                "transactionId='" + transactionId + '\'' +
                 ", customerId=" + customerId +
                 ", customerName='" + customerName + '\'' +
-                ", monYear=" + monYear +
+                ", monYear='" + monYear + '\'' +
                 ", billAmount=" + billAmount +
                 ", surcharge=" + surcharge +
                 ", paybleAmount=" + paybleAmount +
                 ", billcount=" + billcount +
                 ", status=" + status +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 ", paidAt=" + paidAt +
+                ", paidBy='" + paidBy + '\'' +
                 ", mobileNo='" + mobileNo + '\'' +
                 ", paidAmount=" + paidAmount +
                 ", bankName='" + bankName + '\'' +

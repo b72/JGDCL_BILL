@@ -179,12 +179,19 @@ public class DashboardController {
                 Map<String, Object> map = springParser.parseMap(res);
                 if ((int) map.get("status") == 200) {
                     status = 200;
-                    int update = updateBill(map.get("transactionId").toString(), payBillRequest);
-                    System.out.println(update);
+                    int update =
+                            billPayService.payBill(
+                                    payBillRequest,
+                                    map.get("transactionId").toString(),
+                                    JgdlConfig.getPaidStatus(),
+                                    logged
+                            );
+                    System.out.println("Bill Paid : "  + update);
                     response = res;
                 } else {
                     status = 400;
-                    billPayService.updateStatus(payBillRequest, map.get("transactionId").toString(), JgdlConfig.getUnPaidStatus());
+                    billPayService.payBill(payBillRequest, map.get("transactionId").toString(), JgdlConfig.getUnPaidStatus(), logged);
+                    System.out.println("Bill UnPaid ");
                     response = res;
                 }
 
@@ -219,7 +226,7 @@ public class DashboardController {
 
     private Bill saveBill(Map<String, Object> map) {
         Bill bill = new Bill();
-        bill.setCustomerId(Long.parseLong(map.get("customerId").toString()));
+        bill.setCustomerId(map.get("customerId").toString());
         bill.setCustomerName(map.get("customerName").toString());
         bill.setMonYear(map.get("monyear").toString());
         bill.setBillAmount(Double.parseDouble(map.get("billAmount").toString()));
@@ -234,9 +241,6 @@ public class DashboardController {
         return saved;
     }
 
-    private int updateBill(String apiTrxId, PayBillRequest payBillRequest) {
-        return billPayService.updateStatus(payBillRequest, apiTrxId, JgdlConfig.getPaidStatus());
-    }
 
 
 }

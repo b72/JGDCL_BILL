@@ -3,6 +3,7 @@ package com.mamun72.service;
 import com.mamun72.billarApi.JgdlConfig;
 import com.mamun72.billarApi.PayBillRequest;
 import com.mamun72.entity.Bill;
+import com.mamun72.entity.User;
 import com.mamun72.repo.BillRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,13 +23,14 @@ public class BillPayService {
         return billRepo.save(bill);
     }
 
-    public int updateStatus(PayBillRequest payBillRequest, String apiTrxId, int status) {
-        return billRepo.updateBill(
+    public int payBill(PayBillRequest payBillRequest, String apiTrxId, int status, User user) {
+        return billRepo.payBill(
                 apiTrxId,
                 payBillRequest.getPaidAmount(),
                 status,
                 payBillRequest.getMobileNo(),
-                payBillRequest.getTransactionId()
+                payBillRequest.getTransactionId(),
+                user.getUserId()
         );
     }
 
