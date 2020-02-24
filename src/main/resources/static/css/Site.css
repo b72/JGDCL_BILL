@@ -8,6 +8,17 @@
     line-height:1.0 !important
 }
 
+#get-report{
+    margin: 10px auto;
+    text-align: justify;
+    width: 450px;
+}
+
+#get-report ~ .submit {
+    margin: 1px auto;
+    width: 220px;
+}
+
 .loader{
     display: none;
 }

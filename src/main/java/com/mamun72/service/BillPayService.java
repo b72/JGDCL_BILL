@@ -1,14 +1,11 @@
 package com.mamun72.service;
 
-import com.mamun72.billarApi.JgdlConfig;
-import com.mamun72.billarApi.PayBillRequest;
+import com.mamun72.billarApi.Jgdl.POJO.PayBillRequest;
 import com.mamun72.entity.Bill;
 import com.mamun72.entity.User;
 import com.mamun72.repo.BillRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class BillPayService {
@@ -30,7 +27,8 @@ public class BillPayService {
                 status,
                 payBillRequest.getMobileNo(),
                 payBillRequest.getTransactionId(),
-                user.getUserId()
+                user.getUserId(),
+                user.getBranchCodeint()
         );
     }
 

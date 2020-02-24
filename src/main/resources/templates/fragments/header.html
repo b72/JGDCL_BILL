@@ -29,9 +29,27 @@
     </div>
 </div>
 <div class="footer" id="footer" th:fragment="footer">
-    <div style="width: 800px; height: 100px; text-align: center; margin-left: auto; margin-right: auto; padding-top: 285px; padding-bottom: auto; font-family: Calibri; font-size: 11px;">
+    <div style="width: 800px; height: 100px; text-align: center; margin-left: auto; margin-right: auto; padding-top: 10px; padding-bottom: auto; font-family: Calibri; font-size: 11px;">
         <hr>
         National Bank Limited &nbsp; |&nbsp; Information Technology Division
         <hr>
     </div>
+</div>
+
+<div th:fragment="datepicker" xmlns:th="http://www.w3.org/1999/xhtml">
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{~/css/datepicker.css}"/>
+    <script th:src="@{~/js/datepicker.js} "></script>
+</div>
+
+
+<div th:fragment="datatable" xmlns:th="http://www.w3.org/1999/xhtml">
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{~/css/dataTables.css}"/>
+    <link rel="stylesheet" type="text/css" media="all" th:href="@{~/css/buttons.dataTables.min.css}"/>
+    <script th:src="@{~/js/dataTables.js} "></script>
+    <script th:src="@{~/js/dataTables.buttons.min.js} "></script>
+    <script th:src="@{~/js/jszip.min.js} "></script>
+    <script th:src="@{~/js/pdfmake.min.js} "></script>
+    <script th:src="@{~/js/vfs_fonts.js} "></script>
+    <script th:src="@{~/js/buttons.html5.min.js} "></script>
+    <script th:src="@{~/js/buttons.print.min.js} "></script>
 </div>

@@ -20,7 +20,7 @@ public class User implements Serializable {
     @Id
     @Column(unique = true)
     private String userName;
-    @Column(nullable = true)
+    @Column(nullable = false)
     private String BranchCodeint;
     @Column(nullable = true)
     private String brCode;

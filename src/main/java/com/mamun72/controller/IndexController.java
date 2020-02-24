@@ -2,7 +2,6 @@ package com.mamun72.controller;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mamun72.entity.Bill;
 import com.mamun72.entity.User;
 import com.mamun72.service.BillPayService;
 import com.mamun72.service.UserService;
@@ -14,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,9 +39,10 @@ public class IndexController {
             @RequestParam Map<String, String> reqParam,
             HttpServletResponse httpServletResponse
     ) throws IOException {
-        final ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        final User us = mapper.convertValue(reqParam, User.class);
+        User us = mapper.convertValue(reqParam, User.class);
+        us.setBranchCodeint(reqParam.get("BranchCodeint"));
          Optional<User> user = userService.getOneByName(us.getUserName());
         if(user.isPresent()){
             User found = user.get();
@@ -52,7 +51,7 @@ public class IndexController {
                 * redirect user to dashboard
                 * */
                 //httpServletResponse.sendRedirect("/dashboard");
-                httpServletResponse.sendRedirect("/");
+                httpServletResponse.sendRedirect("/get-bill");
 
             }
             else {
@@ -76,7 +75,7 @@ public class IndexController {
                 * redirect user to dashboard
                 *
                 * */
-                httpServletResponse.sendRedirect("/");
+                httpServletResponse.sendRedirect("/get-bill");
             }
             else if((created.getUserName() != null) && !createAuth(created)) {
                 /*

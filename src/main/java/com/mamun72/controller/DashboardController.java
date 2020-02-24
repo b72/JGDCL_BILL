@@ -1,13 +1,15 @@
 package com.mamun72.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mamun72.billarApi.JgdlApi;
-import com.mamun72.billarApi.JgdlConfig;
-import com.mamun72.billarApi.PayBillRequest;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.mamun72.billarApi.Jgdl.JgdlApi;
+import com.mamun72.billarApi.Jgdl.JgdlConfig;
+import com.mamun72.billarApi.Jgdl.POJO.PayBillRequest;
+import com.mamun72.billarApi.Jgdl.POJO.ReportError;
 import com.mamun72.entity.ApiLog;
 import com.mamun72.entity.Bill;
 import com.mamun72.entity.User;
-import com.mamun72.service.ApiLogService;
+import com.mamun72.repo.ApiLogRepo;
 import com.mamun72.service.BillPayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParser;
@@ -25,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 
@@ -32,9 +35,9 @@ import java.util.Map;
 public class DashboardController {
 
     @Autowired
-    ApiLogService apiLogService;
-    @Autowired
     BillPayService billPayService;
+    @Autowired
+    ApiLogRepo apiLogRepo;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String dashboard(Model model) {
@@ -67,6 +70,7 @@ public class DashboardController {
 
     }
 
+
     @RequestMapping(value = "/get-bill", method = RequestMethod.GET)
     public String getBill(Model model) {
         User user = getLoggedInUser();
@@ -81,6 +85,40 @@ public class DashboardController {
         return "error";
     }
 
+    @RequestMapping(value = "/get-report", method = RequestMethod.GET)
+    public String getReport(Model model) {
+        User user = getLoggedInUser();
+
+        if (user != null) {
+            System.out.println(user);
+            model.addAttribute("user", user);
+            model.addAttribute("title", "JGDCL|NBL");
+            model.addAttribute("name", "Jalalabd Gas Distribution Company Limited");
+            return "report";
+        }
+        return "error";
+    }
+
+    /*
+     * Save bill
+     * return Bill that saved
+     * */
+    private Bill saveBill(Map<String, Object> map) {
+        Bill bill = new Bill();
+        bill.setCustomerId(map.get("customerId").toString());
+        bill.setCustomerName(map.get("customerName").toString());
+        bill.setMonYear(map.get("monyear").toString());
+        bill.setBillAmount(Double.parseDouble(map.get("billAmount").toString()));
+        bill.setPaybleAmount(Double.parseDouble(map.get("paybleAmount").toString()));
+        bill.setBillcount(Integer.parseInt(map.get("billcount").toString()));
+        bill.setPaidAmount(0);
+        bill.setMobileNo(null);
+        bill.setStatus(JgdlConfig.getUnPaidStatus());
+        bill.setBankName(JgdlConfig.getBankName());
+        bill.setSurcharge(Double.parseDouble(map.get("surcharge").toString()));
+        Bill saved = billPayService.saveBill(bill);
+        return saved;
+    }
 
     /*
      * Ajax call for get bill info from JGDCL server
@@ -95,19 +133,15 @@ public class DashboardController {
             HttpServletRequest request) {
         Integer status = 200;
         String response = null;
-        HttpHeaders sentHeaders = new HttpHeaders();
-        sentHeaders.add(HttpHeaders.CACHE_CONTROL, "no-cache");
-        sentHeaders.add(HttpHeaders.CONNECTION, "close");
-        sentHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
         if (getLoggedInUser() == null) {
-            return ResponseEntity.status(403).headers(sentHeaders).body("Session timeout!");
+
+            return ResponseEntity.status(403).headers(sentHeader()).body("Session timeout!");
         }
         if (csrf_token.equals(new HttpSessionCsrfTokenRepository().loadToken(request).getToken())) {
             JgdlApi jgdlApi = new JgdlApi();
-            jgdlApi.setApiLogService(apiLogService);
-            jgdlApi.setActiveLog(true);
+
             try {
-                String res = jgdlApi.getBillInfo(customerId);
+                String res = jgdlApi.getBillInformation(customerId);
                 JsonParser springParser = JsonParserFactory.getJsonParser();
                 Map<String, Object> map = springParser.parseMap(res);
                 if ((int) map.get("status") == 200) {
@@ -122,21 +156,20 @@ public class DashboardController {
                     response = res;
                 }
             } catch (Exception e) {
-                System.out.println("getCustomer " + e.toString());
-                ApiLog apiLog = new ApiLog();
-                apiLog.setLogId(customerId);
-                apiLog.setRequest(jgdlApi.getStringBody());
-                apiLog.setResponse(e.getMessage());
-                keepApiLog(apiLog);
-
                 status = 500;
                 response = e.getMessage();
             }
+            ApiLog apiLog = new ApiLog();
+            apiLog.setLogId(customerId);
+            apiLog.setResponse(response);
+            apiLog.setRequest(jgdlApi.getStringRequestBody());
+            keepApiLog(apiLog);
         } else {
             status = 401;
             response = "X-CSRF-TOKEN not found or mismatch";
         }
-        return ResponseEntity.status(status).headers(sentHeaders).body(response);
+
+        return ResponseEntity.status(status).headers(sentHeader()).body(response);
     }
 
 
@@ -153,21 +186,15 @@ public class DashboardController {
             @RequestHeader(name = "X-CSRF-TOKEN") String csrf_token) {
         Integer status = 200;
         String response = null;
-        HttpHeaders sentHeaders = new HttpHeaders();
-        sentHeaders.add(HttpHeaders.CACHE_CONTROL, "no-cache");
-        sentHeaders.add(HttpHeaders.CONNECTION, "close");
-        sentHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
         User logged = getLoggedInUser();
-        System.out.println(logged.toString());
+        System.out.println(logged.getBranchCodeint());
         if (logged == null) {
-            return ResponseEntity.status(403).headers(sentHeaders).body("Session timeout!");
+            return ResponseEntity.status(403).headers(sentHeader()).body("Session timeout!");
         }
         if (csrf_token.equals(new HttpSessionCsrfTokenRepository().loadToken(request).getToken())) {
             JgdlApi jgdlApi = new JgdlApi();
-            jgdlApi.setApiLogService(apiLogService);
-            jgdlApi.setActiveLog(true);
+            String trxId = payload.get("transactionId").toString();
             try {
-                String trxId = payload.get("transactionId").toString();
                 PayBillRequest payBillRequest = new PayBillRequest();
                 payBillRequest.setTransactionId(trxId);
                 payBillRequest.setCustomerId(payload.get("customerId").toString());
@@ -186,7 +213,7 @@ public class DashboardController {
                                     JgdlConfig.getPaidStatus(),
                                     logged
                             );
-                    System.out.println("Bill Paid : "  + update);
+                    System.out.println("Bill Paid : " + update);
                     response = res;
                 } else {
                     status = 400;
@@ -199,19 +226,75 @@ public class DashboardController {
 
                 response = e.getMessage();
                 status = 500;
-                ApiLog apilog = new ApiLog();
-                apilog.setLogId("1234");
-                apilog.setRequest(jgdlApi.getStringBody());
-                apilog.setResponse(e.getMessage());
-                keepApiLog(apilog);
+            }
+            ApiLog apiLog = new ApiLog();
+            apiLog.setLogId(trxId);
+            apiLog.setResponse(response);
+            apiLog.setRequest(jgdlApi.getStringRequestBody());
+            keepApiLog(apiLog);
+        } else {
+            status = 401;
+            response = "X-CSRF-TOKEN not found or mismatch";
+        }
+        return ResponseEntity.status(status).headers(sentHeader()).body(response);
+    }
+
+
+    /*
+     * Ajax call for get bill info from JGDCL server
+     * param string customerId
+     * */
+    @RequestMapping(value = "/ajax/getReport",
+            method = RequestMethod.GET)
+    public @ResponseBody
+    ResponseEntity<String> getReport(
+            @RequestParam("fromDate") String fromDate,
+            @RequestParam("toDate") String toDate,
+            @RequestHeader(name = "X-CSRF-TOKEN") String csrf_token,
+            HttpServletRequest request) {
+        Integer status = 200;
+        String response = null;
+        PayBillRequest[] paidBills;
+        if (getLoggedInUser() == null) {
+
+            return ResponseEntity.status(403).headers(sentHeader()).body("Session timeout!");
+        }
+        if (csrf_token.equals(new HttpSessionCsrfTokenRepository().loadToken(request).getToken())) {
+            JgdlApi jgdlApi = new JgdlApi();
+
+            try {
+                String res = jgdlApi.getReport(fromDate, toDate);
+
+                ObjectMapper objectMapper = new ObjectMapper();
+                try{
+                    paidBills = objectMapper.readValue(res, PayBillRequest[].class);
+                    System.out.println(paidBills.length);
+                    status = 200;
+                    response = res;
+                }catch (Exception e){
+                    ReportError reportError = objectMapper.readValue(res, ReportError.class);
+                    throw new Exception(reportError.getMessage(), e);
+                }
+            } catch (Exception e) {
+                status = 500;
+                response = e.getMessage();
             }
         } else {
             status = 401;
             response = "X-CSRF-TOKEN not found or mismatch";
         }
-        return ResponseEntity.status(status).headers(sentHeaders).body(response);
+
+        return ResponseEntity.status(status).headers(sentHeader()).body(response);
     }
 
+
+    private HttpHeaders sentHeader() {
+        HttpHeaders sentHeaders = new HttpHeaders();
+        sentHeaders.add(HttpHeaders.CACHE_CONTROL, "no-cache");
+        sentHeaders.add(HttpHeaders.CONNECTION, "close");
+        sentHeaders.add(HttpHeaders.CONTENT_TYPE, "application/json");
+        return sentHeaders;
+    }
 
     private User getLoggedInUser() {
 
@@ -220,27 +303,7 @@ public class DashboardController {
     }
 
     private void keepApiLog(ApiLog apiLog) {
-        apiLogService.saveLog(apiLog);
-        System.out.println("SAVE CALL FROM CONTROLLER");
+        apiLogRepo.save(apiLog);
     }
-
-    private Bill saveBill(Map<String, Object> map) {
-        Bill bill = new Bill();
-        bill.setCustomerId(map.get("customerId").toString());
-        bill.setCustomerName(map.get("customerName").toString());
-        bill.setMonYear(map.get("monyear").toString());
-        bill.setBillAmount(Double.parseDouble(map.get("billAmount").toString()));
-        bill.setPaybleAmount(Double.parseDouble(map.get("paybleAmount").toString()));
-        bill.setBillcount(Integer.parseInt(map.get("billcount").toString()));
-        bill.setPaidAmount(0);
-        bill.setMobileNo(null);
-        bill.setStatus(JgdlConfig.getUnPaidStatus());
-        bill.setBankName(JgdlConfig.getBankName());
-        bill.setSurcharge(Double.parseDouble(map.get("surcharge").toString()));
-        Bill saved = billPayService.saveBill(bill);
-        return saved;
-    }
-
-
 
 }

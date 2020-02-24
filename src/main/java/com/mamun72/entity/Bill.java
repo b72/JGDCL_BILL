@@ -6,7 +6,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.UUID;
 
 @Entity
 @Table(name = "bill")
@@ -35,7 +34,7 @@ public class Bill {
     @Column(name = "paybleAmount", nullable = true, precision = 2)
     private Double paybleAmount;
 
-    @Column(name = "billcount", nullable = true)
+    @Column(name = "billCount", nullable = true)
     private Integer billcount;
 
     @Column(name = "status", nullable = true, length = 2)
@@ -82,6 +81,8 @@ public class Bill {
     private double paidAmount;
     private String bankName;
     private String jsdclTrxId;
+    @Column(name = "branch_code_int", nullable = true)
+    private String branchCodeInt;
 
 
 
@@ -197,11 +198,19 @@ public class Bill {
         this.jsdclTrxId = jsdclTrxId;
     }
 
+    public String getBranchCodeInt() {
+        return branchCodeInt;
+    }
+
+    public void setBranchCodeInt(String branchCodeInt) {
+        this.branchCodeInt = branchCodeInt;
+    }
+
     @Override
     public String toString() {
         return "Bill{" +
                 "transactionId='" + transactionId + '\'' +
-                ", customerId=" + customerId +
+                ", customerId='" + customerId + '\'' +
                 ", customerName='" + customerName + '\'' +
                 ", monYear='" + monYear + '\'' +
                 ", billAmount=" + billAmount +
@@ -217,6 +226,7 @@ public class Bill {
                 ", paidAmount=" + paidAmount +
                 ", bankName='" + bankName + '\'' +
                 ", jsdclTrxId='" + jsdclTrxId + '\'' +
+                ", branchCodeInt='" + branchCodeInt + '\'' +
                 '}';
     }
 }

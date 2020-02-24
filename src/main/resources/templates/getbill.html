@@ -26,18 +26,20 @@
                             <button type="submit" class="btn btn-primary">Submit</button>
                         </form>
                         <div class="text-center">
-                            <img size="40" src="images/progress-spinner.gif" class="img-fluid pay-information-loader" alt="">
+                            <img size="40" src="images/progress-spinner.gif" class="img-fluid pay-information-loader"
+                                 alt="">
                         </div>
                         <div>
                             <label for="pay-information"> <span id="pay-information"> Payment Information </span>
                             </label>
                             <hr>
                         </div>
-                        <table class="table table-striped">
+                        <table class="table table-striped table-sm">
                             <tbody class="ajax-pay-result"></tbody>
                         </table>
                     </div>
-                    <div class="col-md-7 results">
+                    <div class="col-md-1"></div>
+                    <div class="col-md-6 results">
                         <div class="text-center">
                             <img src="images/progress-spinner.gif" class="img-fluid loader" alt="">
                         </div>
@@ -47,7 +49,7 @@
                                 </label>
                                 <hr>
                             </div>
-                            <table class="table table-striped">
+                            <table class="table table-striped table-sm">
                                 <tbody class="ajax-result"></tbody>
                             </table>
                         </form>
@@ -58,6 +60,6 @@
         </div>
     </div>
     <script th:src="@{/js/ajax_call.js}"></script>
-
+</div>
 </body>
 </html>

@@ -1,4 +1,4 @@
-package com.mamun72.billarApi;
+package com.mamun72.billarApi.Jgdl;
 
 public class JgdlConfig {
 
@@ -10,7 +10,7 @@ public class JgdlConfig {
     //private static final String getCustomer = "/comments";
     private static final String payment = "/api/payment";
     //private static final String payment = "/posts";
-    private static final String getAllBills = "/post";
+    private static final String getAllBills = "/api/getBillDetail";
 
     private static final String bankName = "NBL";
 

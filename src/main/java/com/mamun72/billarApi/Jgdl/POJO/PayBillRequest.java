@@ -1,11 +1,14 @@
-package com.mamun72.billarApi;
+package com.mamun72.billarApi.Jgdl.POJO;
 
-public class PayBillRequest {
+import com.mamun72.billarApi.PostBody;
+
+public class PayBillRequest implements PostBody {
     private String customerId;
     private Double paidAmount;
     private String bankName;
     private String transactionId;
     private String mobileNo;
+    private String txndate;
 
     public String getCustomerId() {
         return customerId;
@@ -47,6 +50,14 @@ public class PayBillRequest {
         this.mobileNo = mobileNo;
     }
 
+    public String getTxndate() {
+        return txndate;
+    }
+
+    public void setTxndate(String txndate) {
+        this.txndate = txndate;
+    }
+
     @Override
     public String toString() {
         return "PayBillRequest{" +
@@ -55,6 +66,7 @@ public class PayBillRequest {
                 ", bankName='" + bankName + '\'' +
                 ", transactionId='" + transactionId + '\'' +
                 ", mobileNo='" + mobileNo + '\'' +
+                ", txndate='" + txndate + '\'' +
                 '}';
     }
 }
