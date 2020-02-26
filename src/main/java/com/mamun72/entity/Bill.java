@@ -53,6 +53,8 @@ public class Bill {
 
     private String paidBy;
 
+    private Double stampCharge;
+
     public Timestamp getCreatedAt() {
         return createdAt;
     }
@@ -206,6 +208,15 @@ public class Bill {
         this.branchCodeInt = branchCodeInt;
     }
 
+
+    public Double getStampCharge() {
+        return stampCharge;
+    }
+
+    public void setStampCharge(Double stampCharge) {
+        this.stampCharge = stampCharge;
+    }
+
     @Override
     public String toString() {
         return "Bill{" +
@@ -222,6 +233,7 @@ public class Bill {
                 ", updatedAt=" + updatedAt +
                 ", paidAt=" + paidAt +
                 ", paidBy='" + paidBy + '\'' +
+                ", stampCharge=" + stampCharge +
                 ", mobileNo='" + mobileNo + '\'' +
                 ", paidAmount=" + paidAmount +
                 ", bankName='" + bankName + '\'' +

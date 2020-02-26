@@ -32,7 +32,8 @@ $(document).ready(function () {
                                     "surcharge",
                                     "paybleAmount",
                                     "billcount",
-                                    "transactionId"
+                                    "transactionId",
+                                    "stampCharge"
                                 ].includes(key)) {
                                 var key1 = key.charAt(0).toUpperCase() + key.slice(1);
                                 var key2 = key1.replace(/([A-Z])/g, ' $1').trim();

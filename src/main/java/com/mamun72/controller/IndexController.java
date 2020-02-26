@@ -1,10 +1,12 @@
 package com.mamun72.controller;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mamun72.entity.User;
 import com.mamun72.service.BillPayService;
 import com.mamun72.service.UserService;
+import com.mamun72.utils.Decryptor;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -19,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Optional;
 
 @Controller
@@ -36,13 +38,15 @@ public class IndexController {
     @RequestMapping(value = "/userlogin", method = RequestMethod.GET)
     public
     void login(
-            @RequestParam Map<String, String> reqParam,
+            @RequestParam HashMap<String, String> reqParam,
             HttpServletResponse httpServletResponse
     ) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+        reqParam.forEach((key,value)-> reqParam.replace(key, new Decryptor().decrypt(value).trim()));
+        String json = mapper.writeValueAsString(reqParam);
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        User us = mapper.convertValue(reqParam, User.class);
-        us.setBranchCodeint(reqParam.get("BranchCodeint"));
+        mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+        User us = mapper.readValue(json, User.class);
          Optional<User> user = userService.getOneByName(us.getUserName());
         if(user.isPresent()){
             User found = user.get();
@@ -63,12 +67,7 @@ public class IndexController {
             }
         }
         else{
-            User userNw = new User();
-            userNw.setUserName(us.getUserName());
-            userNw.setBranchCodeint(us.getBranchCodeint());
-            userNw.setBrName(us.getBrName());
-            userNw.setUserId(us.getUserId());
-            User created = userService.saveUser(userNw);
+            User created = userService.saveUser(us);
             if((created.getUserName() != null) && createAuth(created)) {
                 /*
                 * User created & logged in
@@ -98,7 +97,7 @@ public class IndexController {
     @Nullable
     private boolean createAuth(User user){
         Authentication authentication = new UsernamePasswordAuthenticationToken(user, null,
-                AuthorityUtils.createAuthorityList("ROLE_USER"));
+                AuthorityUtils.createAuthorityList(user.getUserType()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Authentication authenticationUser = SecurityContextHolder.getContext().getAuthentication();
         if (!(authenticationUser instanceof AnonymousAuthenticationToken)) {

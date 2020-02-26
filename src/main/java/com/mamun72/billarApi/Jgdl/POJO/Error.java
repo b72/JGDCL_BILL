@@ -4,7 +4,7 @@ package com.mamun72.billarApi.Jgdl.POJO;
 import com.fasterxml.jackson.annotation.JsonClassDescription;
 
 @JsonClassDescription
-public class ReportError {
+public class Error {
     private String timestamp;
     private String status;
     private String error;

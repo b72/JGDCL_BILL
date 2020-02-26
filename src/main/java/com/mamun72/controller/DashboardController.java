@@ -1,19 +1,20 @@
 package com.mamun72.controller;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.mamun72.billarApi.Jgdl.JgdlApi;
 import com.mamun72.billarApi.Jgdl.JgdlConfig;
+import com.mamun72.billarApi.Jgdl.POJO.BillReport;
+import com.mamun72.billarApi.Jgdl.POJO.BillResponse;
 import com.mamun72.billarApi.Jgdl.POJO.PayBillRequest;
-import com.mamun72.billarApi.Jgdl.POJO.ReportError;
+import com.mamun72.billarApi.Jgdl.POJO.PayBillResponse;
 import com.mamun72.entity.ApiLog;
 import com.mamun72.entity.Bill;
 import com.mamun72.entity.User;
 import com.mamun72.repo.ApiLogRepo;
 import com.mamun72.service.BillPayService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JsonParser;
-import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,8 +28,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @Controller
@@ -44,7 +46,6 @@ public class DashboardController {
         User user = getLoggedInUser();
 
         if (user != null) {
-            System.out.println(user);
             model.addAttribute("user", user);
             model.addAttribute("title", "JGDCL|NBL");
             model.addAttribute("name", "Jalalabd Gas Distribution Company Limited");
@@ -76,7 +77,6 @@ public class DashboardController {
         User user = getLoggedInUser();
 
         if (user != null) {
-            System.out.println(user);
             model.addAttribute("user", user);
             model.addAttribute("title", "JGDCL|NBL");
             model.addAttribute("name", "Jalalabd Gas Distribution Company Limited");
@@ -90,7 +90,6 @@ public class DashboardController {
         User user = getLoggedInUser();
 
         if (user != null) {
-            System.out.println(user);
             model.addAttribute("user", user);
             model.addAttribute("title", "JGDCL|NBL");
             model.addAttribute("name", "Jalalabd Gas Distribution Company Limited");
@@ -103,19 +102,20 @@ public class DashboardController {
      * Save bill
      * return Bill that saved
      * */
-    private Bill saveBill(Map<String, Object> map) {
+    private Bill saveBill(BillResponse billResponse) {
         Bill bill = new Bill();
-        bill.setCustomerId(map.get("customerId").toString());
-        bill.setCustomerName(map.get("customerName").toString());
-        bill.setMonYear(map.get("monyear").toString());
-        bill.setBillAmount(Double.parseDouble(map.get("billAmount").toString()));
-        bill.setPaybleAmount(Double.parseDouble(map.get("paybleAmount").toString()));
-        bill.setBillcount(Integer.parseInt(map.get("billcount").toString()));
+        bill.setCustomerId(billResponse.getCustomerId());
+        bill.setCustomerName(billResponse.getCustomerName());
+        bill.setMonYear(billResponse.getMonyear());
+        bill.setBillAmount(billResponse.getBillAmount());
+        bill.setPaybleAmount(billResponse.getPaybleAmount());
+        bill.setBillcount(billResponse.getBillcount());
         bill.setPaidAmount(0);
         bill.setMobileNo(null);
         bill.setStatus(JgdlConfig.getUnPaidStatus());
         bill.setBankName(JgdlConfig.getBankName());
-        bill.setSurcharge(Double.parseDouble(map.get("surcharge").toString()));
+        bill.setSurcharge(billResponse.getSurcharge());
+        bill.setStampCharge(billResponse.getStampCharge());
         Bill saved = billPayService.saveBill(bill);
         return saved;
     }
@@ -142,13 +142,15 @@ public class DashboardController {
 
             try {
                 String res = jgdlApi.getBillInformation(customerId);
-                JsonParser springParser = JsonParserFactory.getJsonParser();
-                Map<String, Object> map = springParser.parseMap(res);
-                if ((int) map.get("status") == 200) {
-                    String trxId = saveBill(map).getTransactionId();
-                    map.put("transactionId", trxId);
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    String json = objectMapper.writeValueAsString(map);
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+                mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+                BillResponse billResponse = mapper.readValue(res, BillResponse.class);
+                if (billResponse.getStatus() == JgdlConfig.getApiSuccessCode()) {
+                    billResponse.setStampCharge((billResponse.getPaybleAmount() >= 400) ? JgdlConfig.getStampCharge() : 0.00);
+                    Bill newBill = saveBill(billResponse);
+                    billResponse.setTransactionId(newBill.getTransactionId());
+                    String json = mapper.writeValueAsString(billResponse);
                     status = 200;
                     response = json;
                 } else {
@@ -182,12 +184,11 @@ public class DashboardController {
     public @ResponseBody
     ResponseEntity<String> payBill(
             HttpServletRequest request,
-            @RequestBody Map<String, Object> payload,
+            @RequestBody HashMap<String, String> payload,
             @RequestHeader(name = "X-CSRF-TOKEN") String csrf_token) {
         Integer status = 200;
         String response = null;
         User logged = getLoggedInUser();
-        System.out.println(logged.getBranchCodeint());
         if (logged == null) {
             return ResponseEntity.status(403).headers(sentHeader()).body("Session timeout!");
         }
@@ -202,23 +203,28 @@ public class DashboardController {
                 payBillRequest.setMobileNo(payload.get("mobileNo").toString());
 
                 String res = jgdlApi.payBill(payBillRequest);
-                JsonParser springParser = JsonParserFactory.getJsonParser();
-                Map<String, Object> map = springParser.parseMap(res);
-                if ((int) map.get("status") == 200) {
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+                mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+                PayBillResponse payBillResponse = mapper.readValue(res, PayBillResponse.class);
+                if (payBillResponse.getStatus() == JgdlConfig.getApiSuccessCode()) {
                     status = 200;
                     int update =
                             billPayService.payBill(
                                     payBillRequest,
-                                    map.get("transactionId").toString(),
+                                    payBillResponse.getTransactionId(),
                                     JgdlConfig.getPaidStatus(),
                                     logged
                             );
-                    System.out.println("Bill Paid : " + update);
                     response = res;
                 } else {
                     status = 400;
-                    billPayService.payBill(payBillRequest, map.get("transactionId").toString(), JgdlConfig.getUnPaidStatus(), logged);
-                    System.out.println("Bill UnPaid ");
+                    billPayService.payBill(
+                            payBillRequest,
+                            payBillResponse.getTransactionId(),
+                            JgdlConfig.getUnPaidStatus(),
+                            logged
+                    );
                     response = res;
                 }
 
@@ -254,11 +260,14 @@ public class DashboardController {
             HttpServletRequest request) {
         Integer status = 200;
         String response = null;
-        PayBillRequest[] paidBills;
+
+        List<BillReport> paidBills;
+
         if (getLoggedInUser() == null) {
 
             return ResponseEntity.status(403).headers(sentHeader()).body("Session timeout!");
         }
+
         if (csrf_token.equals(new HttpSessionCsrfTokenRepository().loadToken(request).getToken())) {
             JgdlApi jgdlApi = new JgdlApi();
 
@@ -266,13 +275,15 @@ public class DashboardController {
                 String res = jgdlApi.getReport(fromDate, toDate);
 
                 ObjectMapper objectMapper = new ObjectMapper();
-                try{
-                    paidBills = objectMapper.readValue(res, PayBillRequest[].class);
-                    System.out.println(paidBills.length);
+                try {
+                    objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+                    objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+                    paidBills = Arrays.asList(objectMapper.readValue(res, BillReport[].class));
+                    System.out.println(paidBills.toString());
                     status = 200;
                     response = res;
-                }catch (Exception e){
-                    ReportError reportError = objectMapper.readValue(res, ReportError.class);
+                } catch (Exception e) {
+                    Error reportError = objectMapper.readValue(res, Error.class);
                     throw new Exception(reportError.getMessage(), e);
                 }
             } catch (Exception e) {

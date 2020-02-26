@@ -1,13 +1,14 @@
 package com.mamun72.billarApi.Jgdl.POJO;
 
-import com.mamun72.billarApi.PostBody;
+public class BillReport {
 
-public class PayBillRequest implements PostBody {
     private String customerId;
     private Double paidAmount;
     private String bankName;
     private String transactionId;
-    private String mobileNo;
+    private String txndate;
+    private Double mobileNo;
+
 
     public String getCustomerId() {
         return customerId;
@@ -41,23 +42,32 @@ public class PayBillRequest implements PostBody {
         this.transactionId = transactionId;
     }
 
-    public String getMobileNo() {
+    public String getTxndate() {
+        return txndate;
+    }
+
+    public void setTxndate(String txndate) {
+        this.txndate = txndate;
+    }
+
+    public Double getMobileNo() {
         return mobileNo;
     }
 
-    public void setMobileNo(String mobileNo) {
+    public void setMobileNo(Double mobileNo) {
         this.mobileNo = mobileNo;
     }
 
 
     @Override
     public String toString() {
-        return "PayBillRequest{" +
+        return "BillReport{" +
                 "customerId='" + customerId + '\'' +
                 ", paidAmount=" + paidAmount +
                 ", bankName='" + bankName + '\'' +
                 ", transactionId='" + transactionId + '\'' +
-                ", mobileNo='" + mobileNo + '\'' +
+                ", txndate='" + txndate + '\'' +
+                ", mobileNo=" + mobileNo +
                 '}';
     }
 }
