@@ -44,9 +44,10 @@ $(document).ready(function () {
                     }
                 },
                 error: function (xhr, status, error) {
+                    console.log(xhr);
                     $(".loader-report").hide();
                    tableFooter.hide();
-                    loadDataTable(table,[],printCounter, fromDate, toDate, xhr.responseText);
+                    loadDataTable(table,[],printCounter, fromDate, toDate, (xhr.responseText) ? xhr.responseText : xhr.message);
                 }
             })
         }

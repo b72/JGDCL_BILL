@@ -178,63 +178,52 @@ public class AjaxController {
             @RequestParam("fromDate") String fromDate,
             @RequestParam("toDate") String toDate,
             @RequestParam("reportType") int reportType,
-            //@RequestHeader(name = "X-CSRF-TOKEN") String csrf_token,
+            @RequestHeader(name = "X-CSRF-TOKEN") String csrf_token,
             HttpServletRequest request) {
         Integer status = 200;
         String response = null;
 
         List<BillReport> paidBills;
 
-       /* if (session.getLoggedInUser() == null) {
+        if (session.getLoggedInUser() == null) {
 
             return ResponseEntity.status(403).headers(sentHeader()).body("Session timeout!");
-        }*/
+        }
 
-      //  if (csrf_token.equals(new HttpSessionCsrfTokenRepository().loadToken(request).getToken())) {
+        if (csrf_token.equals(new HttpSessionCsrfTokenRepository().loadToken(request).getToken())) {
             JgdlApi jgdlApi = new JgdlApi();
 
             try {
                 status = 200;
-                if (reportType == 1) {
-                    String res = jgdlApi.getReport(fromDate, toDate);
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-                    objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-                    paidBills = Arrays.asList(objectMapper.readValue(res, BillReport[].class));
-                    List<String> iDList = paidBills.stream().map((billReport) -> billReport.getTransactionId()).collect(Collectors.toList());
+                ObjectMapper objectMapper = new ObjectMapper();
 
-                    System.out.println(iDList.toString());
-                    return ResponseEntity.status(status).headers(sentHeader()).body(res);
-                } else {
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-                    List bills = billPayService.getBillByBranchStatus("1914", JgdlConfig.getUnPaidStatus());
-                    return ResponseEntity.status(status).headers(sentHeader()).body(objectMapper.writeValueAsString(bills));
-                }
-                // ObjectMapper objectMapper = new ObjectMapper();
-                //try {
-                //  objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                // objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
-                //  paidBills = Arrays.asList(objectMapper.readValue(res, BillReport[].class));
-                //System.out.println(paidBills.toString());
-                //List<String> iDList = paidBills.stream().map((billReport) -> billReport.getTransactionId()).collect(Collectors.toList());
-                //process bills
-                //System.out.println(iDList.toString());
-                //  status = 200;
-                //  response = res;
-                //} catch (Exception e) {
-                //    Error reportError = objectMapper.readValue(res, Error.class);
-                //    throw new Exception(reportError.getMessage(), e);
-                // }
+                    if (reportType == 1) {
+                        String res = jgdlApi.getReport(fromDate, toDate);
+                        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+                        objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+                        try {
+                            paidBills = Arrays.asList(objectMapper.readValue(res, BillReport[].class));
+                            List<String> iDList = paidBills.stream().map((billReport) -> billReport.getTransactionId()).collect(Collectors.toList());
+                            System.out.println(iDList.toString());
+                        } catch (Exception e) {
+                            Error reportError = objectMapper.readValue(res, Error.class);
+                            throw new Exception(reportError.getMessage(), e);
+                        }
+                        return ResponseEntity.status(status).headers(sentHeader()).body(res);
+                    } else {
+                        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+                        List bills = billPayService.getBillByBranchStatus(session.getLoggedInUser().getBrCode(), JgdlConfig.getUnPaidStatus());
+                        return ResponseEntity.status(status).headers(sentHeader()).body(objectMapper.writeValueAsString(bills));
+                    }
 
             } catch (Exception e) {
                 status = 500;
                 response = e.getMessage();
             }
-       // } else {
-       //     status = 401;
-       //     response = "X-CSRF-TOKEN not found or mismatch";
-       // }
+        } else {
+            status = 401;
+            response = "X-CSRF-TOKEN not found or mismatch";
+        }
 
         return ResponseEntity.status(status).headers(sentHeader()).body(response);
     }
