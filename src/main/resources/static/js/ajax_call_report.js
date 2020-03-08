@@ -1,5 +1,6 @@
 $(document).ready(function () {
     $('#report_table_footer').hide();
+    $('#report_table_db_footer').hide();
     $("#from_date").datepicker({
         format: "dd-mm-yyyy",
         todayBtn: "linked",
