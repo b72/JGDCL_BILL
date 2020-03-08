@@ -27,8 +27,8 @@ public class RequestResponseLoggingFilter implements Filter {
                 req.getRequestURI());
         chain.doFilter(request, response);
         LOG.info(
-                "Logging Response :{}",
-                res.getContentType());
+                "Logging Response :{} , Status : {}",
+                res.getContentType(), res.getStatus());
     }
 
 

@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Entity
+@Table(name = "API_LOG")
 public class ApiLog implements Serializable {
     private static final long serialVersionUID = 1L;
 

@@ -1,14 +1,14 @@
 package com.mamun72.entity;
 
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Entity
-@Table(name = "bill")
+@Table(name = "BILL")
 public class Bill {
     @Id
     @GeneratedValue(generator="system-uuid")
@@ -55,6 +55,18 @@ public class Bill {
 
     private Double stampCharge;
 
+    private String mobileNo;
+    private double paidAmount;
+    private String bankName;
+    private String jsdclTrxId;
+
+    private String branchCode;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId", insertable = true, updatable = true)
+    @Fetch(FetchMode.JOIN)
+    private User user;
+
     public Timestamp getCreatedAt() {
         return createdAt;
     }
@@ -78,14 +90,6 @@ public class Bill {
     public void setPaidBy(String paidBy) {
         this.paidBy = paidBy;
     }
-
-    private String mobileNo;
-    private double paidAmount;
-    private String bankName;
-    private String jsdclTrxId;
-    @Column(name = "branch_code_int", nullable = true)
-    private String branchCodeInt;
-
 
 
     public String getCustomerId() {
@@ -200,12 +204,12 @@ public class Bill {
         this.jsdclTrxId = jsdclTrxId;
     }
 
-    public String getBranchCodeInt() {
-        return branchCodeInt;
+    public String getBranchCode() {
+        return branchCode;
     }
 
-    public void setBranchCodeInt(String branchCodeInt) {
-        this.branchCodeInt = branchCodeInt;
+    public void setBranchCode(String branchCode) {
+        this.branchCode = branchCode;
     }
 
 
@@ -215,6 +219,14 @@ public class Bill {
 
     public void setStampCharge(Double stampCharge) {
         this.stampCharge = stampCharge;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -238,7 +250,8 @@ public class Bill {
                 ", paidAmount=" + paidAmount +
                 ", bankName='" + bankName + '\'' +
                 ", jsdclTrxId='" + jsdclTrxId + '\'' +
-                ", branchCodeInt='" + branchCodeInt + '\'' +
+                ", branchCode='" + branchCode + '\'' +
+                ", user=" + user +
                 '}';
     }
 }

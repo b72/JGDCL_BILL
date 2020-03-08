@@ -14,7 +14,8 @@ public class JgdlConfig {
 
     private static final String bankName = "NBL";
 
-    private static final int[] paidStatus = {1, 2};
+    private static final int paidStatus = 2;
+    private static final int unPaidStatus = 1;
     private static final int apiSuccessCode = 200;
     private static final int billAlreadyPaidCode = 902;
     private static final int billWrongCustomerCode = 901;
@@ -50,11 +51,11 @@ public class JgdlConfig {
     }
 
     public static int getUnPaidStatus() {
-        return paidStatus[0];
+        return unPaidStatus;
     }
 
     public static int getPaidStatus() {
-        return paidStatus[1];
+        return paidStatus;
     }
 
     public static int getApiSuccessCode() {

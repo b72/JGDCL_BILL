@@ -29,10 +29,9 @@
                         <script th:replace="fragments/input ::csrf"></script>
                     </div>
                     <div class="col">
-                        <input type="radio" name="optradio" hidden checked value="1">
-                        <!-- <label class="radio-inline">
-                             <input type="radio" name="optradio">Option 3
-                         </label>-->
+
+                            <input type="radio" name="optradio" hidden checked value="2">
+
                         <input style="cursor: pointer" type="submit" class="submit form-control"/>
                     </div>
                 </form>
@@ -40,15 +39,15 @@
                     <div class="text-center" style="margin: 1px auto">
                         <img src="images/progress-spinner.gif" class="img-fluid loader loader-report" alt="">
                     </div>
-                    <table id="report_table" class="display" width="100%">
-                        <tfoot id="report_table_footer">
+
+                    <table id="report_table_db" class="display" width="100%">
+                        <tfoot id="report_table_db_footer">
                         <tr>
-                            <th colspan="5" style="text-align:right">Total:</th>
+                            <th colspan="8" style="text-align:right">Total:</th>
                             <th></th>
                         </tr>
                         </tfoot>
                     </table>
-
 
                 </div>
             </div>

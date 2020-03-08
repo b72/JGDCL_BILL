@@ -7,7 +7,7 @@ public class BillReport {
     private String bankName;
     private String transactionId;
     private String txndate;
-    private Double mobileNo;
+    private String mobileNo;
 
 
     public String getCustomerId() {
@@ -50,11 +50,11 @@ public class BillReport {
         this.txndate = txndate;
     }
 
-    public Double getMobileNo() {
+    public String getMobileNo() {
         return mobileNo;
     }
 
-    public void setMobileNo(Double mobileNo) {
+    public void setMobileNo(String mobileNo) {
         this.mobileNo = mobileNo;
     }
 

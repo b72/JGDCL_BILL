@@ -34,7 +34,7 @@ $(document).ready(function () {
                                     "billcount",
                                     "transactionId",
                                     "stampCharge"
-                                ].includes(key)) {
+                                ].indexOf(key) > -1) {
                                 var key1 = key.charAt(0).toUpperCase() + key.slice(1);
                                 var key2 = key1.replace(/([A-Z])/g, ' $1').trim();
                                 html += '<tr id="'+key+'"><th> ' + key2 + ' </th><td> ' + value + ' </td></tr>';
@@ -62,7 +62,7 @@ $(document).ready(function () {
                     $.each(xhr.responseJSON, function f(key, value) {
                         var key1 = key.charAt(0).toUpperCase() + key.slice(1);
                         var key2 = key1.replace(/([A-Z])/g, ' $1').trim();
-                        if (["message", "status", "error"].includes(key)) {
+                        if (["message", "status", "error"].indexOf(key) > -1) {
                             html += '<tr><th> ' + key2 + ' </th><td> ' + value + ' </td></tr>';
                         }
                     });

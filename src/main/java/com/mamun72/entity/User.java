@@ -5,12 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.Set;
 
 @Entity
 @Table(name = "SSO_USER")
@@ -20,10 +18,10 @@ public class User implements Serializable {
         super();
     }
 
-    @Column(unique = true)
-    private String userId;
     @Id
     @Column(unique = true)
+    private String userId;
+
     private String userName;
 
     private String BranchCodeint;
@@ -59,6 +57,10 @@ public class User implements Serializable {
     @UpdateTimestamp
     @Column(name = "updatedAt", nullable = true)
     private Timestamp updatedAt;
+
+    @OneToMany(targetEntity = Bill.class, mappedBy = "user", orphanRemoval = false, fetch = FetchType.LAZY)
+    private Set<Bill> bills;
+
 
     public void setUserId(String userId) {
         this.userId = userId;
@@ -180,6 +182,15 @@ public class User implements Serializable {
         return Br_Type;
     }
 
+
+    public Set<Bill> getBills() {
+        return bills;
+    }
+
+    public void setBills(Set<Bill> bills) {
+        this.bills = bills;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -198,6 +209,9 @@ public class User implements Serializable {
                 ", ISS_BRANCH_SL='" + ISS_BRANCH_SL + '\'' +
                 ", Fixedasset_BrId='" + Fixedasset_BrId + '\'' +
                 ", Br_Type='" + Br_Type + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                ", bills=" + bills +
                 '}';
     }
 }
