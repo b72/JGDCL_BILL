@@ -19,14 +19,14 @@ public class TransactionFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) servletRequest;
-        LOG.info(
+        /*LOG.info(
                 "Starting a transaction for req : {}",
-                req.getRequestURI());
+                req.getRequestURI());*/
 
         filterChain.doFilter(servletRequest, servletResponse);
-        LOG.info(
+       /* LOG.info(
                 "Committing a transaction for req : {}",
-                req.getRequestURI());
+                req.getRequestURI());*/
 
     }
 

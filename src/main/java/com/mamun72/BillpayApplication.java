@@ -11,5 +11,4 @@ public class BillpayApplication {
     public static void main(String[] args) {
         SpringApplication.run(BillpayApplication.class, args);
     }
-
 }
