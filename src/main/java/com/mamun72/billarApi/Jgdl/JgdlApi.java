@@ -5,6 +5,8 @@ import com.mamun72.billarApi.Api;
 import com.mamun72.billarApi.Jgdl.POJO.PayBillRequest;
 import okhttp3.Credentials;
 import okhttp3.Headers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -13,6 +15,7 @@ import java.util.HashMap;
 @Component
 public class JgdlApi extends Api {
 
+    Logger logger = LoggerFactory.getLogger(JgdlApi.class);
 
     public JgdlApi() {
         super();
@@ -34,8 +37,9 @@ public class JgdlApi extends Api {
             payBillRequest.setBankName(JgdlConfig.getBankName());
             return jsonPost(payBillRequest);
         } catch (Exception e) {
-            System.out.println(e.toString());
-
+            logger.info("error from pay bill api" + e.getMessage() +" - invoked " + new Throwable()
+                    .getStackTrace()[0]
+                    .getMethodName());
         }
         return null;
     }

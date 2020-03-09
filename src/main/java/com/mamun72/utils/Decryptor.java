@@ -1,5 +1,8 @@
 package com.mamun72.utils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.crypto.Cipher;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
@@ -9,6 +12,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class Decryptor {
+
+    Logger logger = LoggerFactory.getLogger(Decryptor.class);
 
     private static final String encryptionKey = "MAKV2SPBNI657328B";
 
@@ -40,7 +45,7 @@ public class Decryptor {
             return new String(result, StandardCharsets.UTF_16LE);
 
         } catch (Exception e) {
-            System.out.println("dycrpt error " + e.getMessage());
+            logger.error("Decryption error " + e.getMessage() +" - invoked " + new Throwable().getStackTrace()[0].getMethodName());
             return null;
         }
     }

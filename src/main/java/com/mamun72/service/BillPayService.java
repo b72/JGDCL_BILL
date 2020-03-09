@@ -60,12 +60,12 @@ public class BillPayService {
                         "u.brName, u.userName, b.status) " +
                         "from Bill as b " +
                         "join b.user as u "+
-                        "where u.brCode =1914 " +
+                        "where u.brCode = :branchCode " +
                         "and b.status = :status";
         TypedQuery<BranchWiseCollectionReport> query =
                 entityManager.createQuery(queryStr, BranchWiseCollectionReport.class);
         List <BranchWiseCollectionReport> results = query
-                //.setParameter("branchCode", 1914)
+                .setParameter("branchCode", branchCode)
                 .setParameter("status", status)
                 .getResultList();
         return results;
