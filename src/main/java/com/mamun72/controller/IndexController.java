@@ -44,28 +44,20 @@ public class IndexController {
             @RequestParam HashMap<String, String> reqParam,
             HttpServletResponse httpServletResponse
     ) throws IOException {
-        logger.info("User hits /userlogin url - invoked " + new Throwable()
-                .getStackTrace()[0]
-                .getMethodName());
+        logger.info("User hits /userlogin url");
         ObjectMapper mapper = new ObjectMapper();
         reqParam.forEach((key,value)-> reqParam.replace(key, new Decryptor().decrypt(value).trim()));
         String json = mapper.writeValueAsString(reqParam);
-        logger.info("User hits /userlogin url with this params " +json + "- invoked " + new Throwable()
-                .getStackTrace()[0]
-                .getMethodName());
+        logger.info("User hits /userlogin url with this params " +json );
         mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
         User us = mapper.readValue(json, User.class);
          Optional<User> user = userService.getOneByName(us.getUserName());
         if(user.isPresent()){
-            logger.info("User hits /userlogin url existing userId " + us.getUserId() + " - invoked " + new Throwable()
-                    .getStackTrace()[0]
-                    .getMethodName());
+            logger.info("User hits /userlogin url existing userId " + us.getUserId() );
             User found = user.get();
             if(createAuth(found)) {
-                logger.info("User userId " + us.getUserId() + " logged and redirected to /get-bill - invoked " + new Throwable()
-                        .getStackTrace()[0]
-                        .getMethodName());
+                logger.info("User userId " + us.getUserId() + " logged and redirected to /get-bill");
                 /*
                 * redirect user to dashboard
                 * */
@@ -78,9 +70,7 @@ public class IndexController {
                 * user not found or unable to login
                 * redirect user to error
                 * */
-                logger.error("User userId " + us.getUserId() + " but unable to logg and redirected to /error-page with code 404 - invoked " + new Throwable()
-                        .getStackTrace()[0]
-                        .getMethodName());
+                logger.error("User userId " + us.getUserId() + " but unable to logg and redirected to /error-page with code 404" );
                 httpServletResponse.sendRedirect("/errorPage?code=404");
             }
         }
@@ -92,9 +82,7 @@ public class IndexController {
                 * redirect user to dashboard
                 *
                 * */
-                logger.info("User userId " + us.getUserId() + " created & logged and redirected to /get-bill - invoked " + new Throwable()
-                        .getStackTrace()[0]
-                        .getMethodName());
+                logger.info("User userId " + us.getUserId() + " created & logged and redirected to /get-bill");
                 httpServletResponse.sendRedirect("/get-bill");
             }
             else if((created.getUserName() != null) && !createAuth(created)) {
@@ -103,9 +91,7 @@ public class IndexController {
                  * redirect user to error
                  *
                  * */
-                logger.error("User userId " + us.getUserId() + " created & but unable to log and redirected to /errorPage with code 500 - invoked " + new Throwable()
-                        .getStackTrace()[0]
-                        .getMethodName());
+                logger.error("User userId " + us.getUserId() + " created & but unable to log and redirected to /errorPage with code 500 ");
                 httpServletResponse.sendRedirect("/errorPage?code=500");
             }
             else {
@@ -114,9 +100,7 @@ public class IndexController {
                  * redirect user to error
                  *
                  * */
-                logger.error("User userId " + us.getUserId() + " unable to create & unable to log and redirected to /errorPage with code \"\" - invoked " + new Throwable()
-                        .getStackTrace()[0]
-                        .getMethodName());
+                logger.error("User userId " + us.getUserId() + " unable to create & unable to log and redirected to /errorPage with code= ");
                 httpServletResponse.sendRedirect("/errorPage?code=");
             }
         }
@@ -129,14 +113,10 @@ public class IndexController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Authentication authenticationUser = SecurityContextHolder.getContext().getAuthentication();
         if (!(authenticationUser instanceof AnonymousAuthenticationToken)) {
-            logger.info("User userId " + user.getUserId() + " logged - invoked " + new Throwable()
-                    .getStackTrace()[0]
-                    .getMethodName());
+            logger.info("User userId " + user.getUserId() + " logged ");
             return true;
         }else{
-            logger.info("User userId " + user.getUserId() + " unable to logged - invoked " + new Throwable()
-                    .getStackTrace()[0]
-                    .getMethodName());
+            logger.info("User userId " + user.getUserId() + " unable to logged");
             return false;
         }
     }

@@ -34,26 +34,18 @@ public class DashboardController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String dashboard(Model model) {
-        logger.info("User hits root url - invoked " + new Throwable()
-                .getStackTrace()[0]
-                .getMethodName());
+        logger.info("User hits root url ");
         User user = session.getLoggedInUser();
 
         if (user != null) {
-            logger.info("User session found - invoked " + new Throwable()
-                    .getStackTrace()[0]
-                    .getMethodName());
+            logger.info("User session found");
             model.addAttribute("user", user);
             model.addAttribute("title", "JGDCL|NBL");
             model.addAttribute("name", "Jalalabd Gas Distribution Company Limited");
-            logger.info("User served index.html page - invoked " + new Throwable()
-                    .getStackTrace()[0]
-                    .getMethodName() );
+            logger.info("User served index.html page ");
             return "index";
         } else {
-            logger.error("User server error.html page as session not found - invoked " + new Throwable()
-                    .getStackTrace()[0]
-                    .getMethodName());
+            logger.error("User server error.html page as session not found ");
             return "error";
         }
     }
@@ -62,28 +54,20 @@ public class DashboardController {
     public @ResponseBody
     void logout(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         try {
-            logger.info("User hits /user-logout url - invoked " + new Throwable()
-                    .getStackTrace()[0]
-                    .getMethodName());
+            logger.info("User hits /user-logout url " );
             User user = session.getLoggedInUser();
             if (user == null) {
-                logger.warn("User session not found redirected to error page with code 404 - invoked " + new Throwable()
-                        .getStackTrace()[0]
-                        .getMethodName());
+                logger.warn("User session not found redirected to error page with code 404");
                 response.sendRedirect("/errorPage?code=404");
             } else {
                 HttpSession session = request.getSession(false);
                 session.invalidate();
-                logger.info("User session found and destroyed. redirected to error page with code 4040 - invoked " + new Throwable()
-                        .getStackTrace()[0]
-                        .getMethodName());
+                logger.info("User session found and destroyed. redirected to error page with code 4040 ");
                 response.sendRedirect("/errorPage?code=4040");
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            logger.error("Exception " + e.getMessage() + ". redirected to error page with code 500 - invoked " + new Throwable()
-                    .getStackTrace()[0]
-                    .getMethodName());
+            logger.error("Exception " + e.getMessage() + ". redirected to error page with code 500 ");
             response.sendRedirect("/errorPage?code=500");
         }
 
@@ -92,67 +76,49 @@ public class DashboardController {
 
     @RequestMapping(value = "/get-bill", method = RequestMethod.GET)
     public String getBill(Model model) {
-        logger.info("User hits /get-bill url - invoked " + new Throwable()
-                .getStackTrace()[0]
-                .getMethodName());
+        logger.info("User hits /get-bill url");
         User user = session.getLoggedInUser();
 
         if (user != null) {
-            logger.info("User hits /get-bill url session found getbill page served - invoked " + new Throwable()
-                    .getStackTrace()[0]
-                    .getMethodName());
+            logger.info("User hits /get-bill url session found getbill page served");
             model.addAttribute("user", user);
             model.addAttribute("title", "JGDCL|NBL");
             model.addAttribute("name", "Jalalabd Gas Distribution Company Limited");
             return "getbill";
         }
-        logger.error("User hits /get-bill url session not found error page served - invoked " + new Throwable()
-                .getStackTrace()[0]
-                .getMethodName());
+        logger.error("User hits /get-bill url session not found error page served ");
         return "error";
     }
 
     @RequestMapping(value = "/get-report", method = RequestMethod.GET)
     public String getReport(Model model) {
-        logger.info("User hits /get-report url - invoked " + new Throwable()
-                .getStackTrace()[0]
-                .getMethodName());
+        logger.info("User hits /get-report url");
         User user = session.getLoggedInUser();
 
         if (user != null) {
-            logger.info("User hits /get-report url session found report page served - invoked " + new Throwable()
-                    .getStackTrace()[0]
-                    .getMethodName());
+            logger.info("User hits /get-report url session found report page served ");
             model.addAttribute("user", user);
             model.addAttribute("title", "JGDCL|NBL");
             model.addAttribute("name", "Jalalabd Gas Distribution Company Limited");
             return "report";
         }
-        logger.error("User hits /get-report url session not found error page served - invoked " + new Throwable()
-                .getStackTrace()[0]
-                .getMethodName());
+        logger.error("User hits /get-report url session not found error page served");
         return "error";
     }
 
     @RequestMapping(value = "/get-report/local", method = RequestMethod.GET)
     public String getReportLocal(Model model) {
-        logger.info("User hits /get-report/local url - invoked " + new Throwable()
-                .getStackTrace()[0]
-                .getMethodName());
+        logger.info("User hits /get-report/local url ");
         User user = session.getLoggedInUser();
 
         if (user != null) {
-            logger.info("User hits /get-report/local url session found report2 page served - invoked " + new Throwable()
-                    .getStackTrace()[0]
-                    .getMethodName());
+            logger.info("User hits /get-report/local url session found report2 page served");
             model.addAttribute("user", user);
             model.addAttribute("title", "JGDCL|NBL");
             model.addAttribute("name", "Jalalabd Gas Distribution Company Limited");
             return "report2";
         }
-        logger.error("User hits /get-report url session not found error page served - invoked " + new Throwable()
-                .getStackTrace()[0]
-                .getMethodName());
+        logger.error("User hits /get-report url session not found error page served");
         return "error";
     }
 }
