@@ -30,8 +30,16 @@
                     </div>
                     <div class="col">
 
-                            <input type="radio" name="optradio" hidden checked value="2">
-
+                        <input type="radio" name="optradio" hidden checked value="2">
+                        <label class="radio-inline">
+                            <input type="radio" name="billstatus" checked th:value="${paidBillStatus}"> Paid
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="billstatus" th:value="${unPaidBillStatus}"> Unpaid
+                        </label>
+                        <label class="radio-inline">
+                            <input type="radio" name="billstatus" th:value="${allBill}"> All
+                        </label>
                         <input style="cursor: pointer" type="submit" class="submit form-control"/>
                     </div>
                 </form>

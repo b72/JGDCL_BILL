@@ -19,12 +19,13 @@ $(document).ready(function () {
         var fromDate = $('#get-report input[name="from_date"]').val();
         var toDate = $('#get-report input[name="to_date"]').val();
         var reportType = $('#get-report input[name="optradio"]:checked').val();
+        var billstatus = $('#get-report input[name="billstatus"]:checked').val();
         if (fromDate && toDate) {
          var table =  (reportType == 1)  ? $('#report_table') : $('#report_table_db') ;
          var tableFooter =  (reportType == 1) ? $('#report_table_footer') : $('#report_table_db_footer');
             $.ajax({
                 method: "GET",
-                url: "/ajax/getReport?fromDate=" + fromDate +"&toDate="+toDate + "&reportType=" + reportType,
+                url: "/ajax/getReport?fromDate=" + fromDate +"&toDate="+toDate + "&reportType=" + reportType + "&billstatus=" + billstatus,
                 headers: {"X-CSRF-TOKEN": $('#get-report input[name="_csrf"]').val()},
                 beforeSend: function () {
                     $(".loader-report").show();

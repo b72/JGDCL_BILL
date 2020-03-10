@@ -146,8 +146,8 @@ public class BranchWiseCollectionReport {
         this.paidBy = paidBy;
     }
 
-    public Date getPaidAt() {
-        return paidAt;
+    public String getPaidAt() {
+        return new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(this.paidAt);
     }
 
     public void setPaidAt(Date paidAt) {
@@ -170,8 +170,8 @@ public class BranchWiseCollectionReport {
         this.getBy = getBy;
     }
 
-    public int getStatus() {
-        return status;
+    public String getStatus() {
+        return (this.status == JgdlConfig.getPaidStatus()) ? "Paid" : "Unpaid";
     }
 
     public void setStatus(int status) {

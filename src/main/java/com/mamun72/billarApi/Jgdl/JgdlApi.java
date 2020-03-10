@@ -37,7 +37,7 @@ public class JgdlApi extends Api {
             payBillRequest.setBankName(JgdlConfig.getBankName());
             return jsonPost(payBillRequest);
         } catch (Exception e) {
-            logger.info("error from pay bill api" + e.getMessage() );
+            logger.info("error from pay bill api " + e.getMessage() );
         }
         return null;
     }

@@ -228,7 +228,7 @@ public class AjaxController {
                 ObjectMapper objectMapper = new ObjectMapper();
 
                 if (reportType == 1) {
-                    logger.info(" Report API called with fromDate" + fromDate + " toDate " + toDate );
+                    logger.info(" Report API called with fromDate " + fromDate + " toDate " + toDate );
                     String res = jgdlApi.getReport(fromDate, toDate);
                     objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
                     objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
@@ -236,15 +236,24 @@ public class AjaxController {
                         paidBills = Arrays.asList(objectMapper.readValue(res, BillReport[].class));
                         List<String> iDList = paidBills.stream().map((billReport) -> billReport.getTransactionId()).collect(Collectors.toList());
                         //System.out.println(iDList.toString());
-                        logger.info(" Report API responded with "+iDList.size()+" number of bill fromDate" + fromDate + " toDate " + toDate );
+                        logger.info(" Report API responded with "+iDList.size()+" number of bill fromDate " + fromDate + " toDate " + toDate );
                     } catch (Exception e) {
                         Error reportError = objectMapper.readValue(res, Error.class);
                         throw new Exception(reportError.getMessage(), e);
                     }
                     return ResponseEntity.status(status).headers(sentHeader()).body(res);
                 } else {
+                    logger.info("Database query with fromDate " + fromDate + " toDate " + toDate + " status " + request.getParameter("billstatus"));
+                    List bills = null;
                     objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-                    List bills = billPayService.getBillByBranchStatus(session.getLoggedInUser().getBrCode(), JgdlConfig.getPaidStatus());
+
+                    if(Integer.parseInt(request.getParameter("billstatus")) != 0) {
+                        System.out.println("Bill status " + Integer.parseInt(request.getParameter("billstatus")));
+                         bills = billPayService.getBillByBranchStatus(fromDate, toDate, session.getLoggedInUser().getBrCode(), Integer.parseInt(request.getParameter("billstatus")));
+                    }
+                    else
+                         bills = billPayService.getBillByBranchStatus(fromDate, toDate, session.getLoggedInUser().getBrCode());
+
                     return ResponseEntity.status(status).headers(sentHeader()).body(objectMapper.writeValueAsString(bills));
                 }
 
@@ -268,30 +277,22 @@ public class AjaxController {
     ResponseEntity<String> getBranchWiseReport(
             @RequestParam("fromDate") String fromDate,
             @RequestParam("toDate") String toDate,
-            @RequestHeader(name = "X-CSRF-TOKEN") String csrf_token,
+            //@RequestHeader(name = "X-CSRF-TOKEN") String csrf_token,
             HttpServletRequest request
     ) {
         int status = 200;
         String response = null;
-        if (csrf_token.equals(new HttpSessionCsrfTokenRepository().loadToken(request).getToken())) {
-            if (session.getLoggedInUser() == null) {
-                return ResponseEntity.status(403).headers(sentHeader()).body("Session timeout!");
-            }
+
             List bills = null;
             try {
-
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-                User loggedUser = session.getLoggedInUser();
-                bills = billPayService.getBillByBranchStatus(loggedUser.getUserId(), JgdlConfig.getUnPaidStatus());
+                bills = billPayService.getBillByBranchStatus(fromDate, toDate, "1914");
+                response = objectMapper.writeValueAsString(bills);
             } catch (Exception e) {
                 status = 500;
                 response = e.getMessage();
             }
-        } else {
-            status = 401;
-            response = "X-CSRF-TOKEN not found or mismatch";
-        }
         return ResponseEntity.status(status).headers(sentHeader()).body(response);
     }
 

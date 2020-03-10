@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
+import java.text.ParseException;
 import java.util.List;
 
 @Service
@@ -49,8 +50,7 @@ public class BillPayService {
     }
 
 
-    public List getBillByBranchStatus(String branchCode, int status){
-        System.out.println("Status" + status);
+    public List getBillByBranchStatus(String fromDate, String toDate, String branchCode, int status) throws ParseException {
         String queryStr =
                 "select new com.mamun72.dto.BranchWiseCollectionReport(b.customerId, b.customerName, " +
                         "b.jsdclTrxId, b.paybleAmount, " +
@@ -61,12 +61,38 @@ public class BillPayService {
                         "from Bill as b " +
                         "join b.user as u "+
                         "where u.brCode = :branchCode " +
-                        "and b.status = :status";
+                        "and b.status = :status " +
+                        "and TRUNC(b.paidAt) between TO_DATE(:fromDate, 'DD-MM-YY') and  TO_DATE(:toDate, 'DD-MM-YY')";
         TypedQuery<BranchWiseCollectionReport> query =
                 entityManager.createQuery(queryStr, BranchWiseCollectionReport.class);
         List <BranchWiseCollectionReport> results = query
                 .setParameter("branchCode", branchCode)
                 .setParameter("status", status)
+                .setParameter("fromDate",fromDate)
+                .setParameter("toDate", toDate)
+                .getResultList();
+        return results;
+    }
+
+    public List getBillByBranchStatus(String fromDate, String toDate, String branchCode) throws ParseException {
+
+        String queryStr =
+                "select new com.mamun72.dto.BranchWiseCollectionReport(b.customerId, b.customerName, " +
+                        "b.jsdclTrxId, b.paybleAmount, " +
+                        "b.billAmount, b.surcharge, " +
+                        "b.stampCharge, b.paidAmount, " +
+                        "b.paidAt, b.paidBy, " +
+                        "u.brName, u.userName, b.status) " +
+                        "from Bill as b " +
+                        "join b.user as u "+
+                        "where u.brCode = :branchCode " +
+                        "and TRUNC(b.paidAt) between TO_DATE(:fromDate, 'DD-MM-YY') and  TO_DATE(:toDate, 'DD-MM-YY')";
+        TypedQuery<BranchWiseCollectionReport> query =
+                entityManager.createQuery(queryStr, BranchWiseCollectionReport.class);
+        List <BranchWiseCollectionReport> results = query
+                .setParameter("branchCode", branchCode)
+                .setParameter("fromDate", fromDate)
+                .setParameter("toDate", toDate)
                 .getResultList();
         return results;
     }

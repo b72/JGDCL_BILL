@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.sql.Timestamp;
+import java.util.Date;
 
 @Entity
 @Table(name = "BILL")
@@ -41,15 +42,18 @@ public class Bill {
     private Integer status;
 
     @CreationTimestamp
+    @Temporal(TemporalType.DATE)
     @Column(name = "createdAt", nullable = false)
-    private Timestamp createdAt;
+    private Date createdAt;
 
     @UpdateTimestamp
+    @Temporal(TemporalType.DATE)
     @Column(name = "updatedAt", nullable = true)
-    private Timestamp updatedAt;
+    private Date updatedAt;
 
+    @Temporal(TemporalType.DATE)
     @Column(name = "paidAt", nullable = true)
-    private Timestamp paidAt;
+    private Date paidAt;
 
     private String paidBy;
 
@@ -67,19 +71,19 @@ public class Bill {
     @Fetch(FetchMode.JOIN)
     private User user;
 
-    public Timestamp getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Timestamp getUpdatedAt() {
+    public Date getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Timestamp updatedAt) {
+    public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -164,11 +168,11 @@ public class Bill {
         this.transactionId = transactionId;
     }
 
-    public Timestamp getPaidAt() {
+    public Date getPaidAt() {
         return paidAt;
     }
 
-    public void setPaidAt(Timestamp paidAt) {
+    public void setPaidAt(Date paidAt) {
         this.paidAt = paidAt;
     }
 

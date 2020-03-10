@@ -4,7 +4,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Timestamp;
+import java.util.Date;
 
 @Entity
 @Table(name = "API_LOG")
@@ -17,8 +17,9 @@ public class ApiLog implements Serializable {
     private long Id;
 
     @CreationTimestamp
+    @Temporal(TemporalType.DATE)
     @Column(name = "createdAt", nullable = false, unique = true)
-    private Timestamp createdAt;
+    private Date createdAt;
 
     @Column(name = "logId", length = 255, unique = false)
     private String logId;

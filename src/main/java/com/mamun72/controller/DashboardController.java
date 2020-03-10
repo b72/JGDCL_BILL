@@ -1,5 +1,6 @@
 package com.mamun72.controller;
 
+import com.mamun72.billarApi.Jgdl.JgdlConfig;
 import com.mamun72.entity.User;
 import com.mamun72.repo.ApiLogRepo;
 import com.mamun72.service.BillPayService;
@@ -115,6 +116,9 @@ public class DashboardController {
             logger.info("User hits /get-report/local url session found report2 page served");
             model.addAttribute("user", user);
             model.addAttribute("title", "JGDCL|NBL");
+            model.addAttribute("paidBillStatus", JgdlConfig.getPaidStatus());
+            model.addAttribute("unPaidBillStatus", JgdlConfig.getUnPaidStatus());
+            model.addAttribute("allBill", 0);
             model.addAttribute("name", "Jalalabd Gas Distribution Company Limited");
             return "report2";
         }
