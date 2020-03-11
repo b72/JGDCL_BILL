@@ -18,9 +18,6 @@ $(document).ready(function () {
                 },
                 success: function (response) {
                     $(".loader").hide();
-                    console.log(response);
-                    console.log(typeof response);
-
                     if (typeof response === "object") {
                         var html = "" ;
                         $.each(response, function f(key, value) {
@@ -56,9 +53,12 @@ $(document).ready(function () {
                 error: function (xhr, status, error) {
                     $(".loader").hide();
                     var html = "";
-                    console.log(xhr);
-                    console.log(status);
-                    console.log(error);
+                    if(xhr.status === 403){
+                        window.location.replace("/");
+                    }
+                    if(status === 403){
+                        window.location.replace("/");
+                    }
                     $.each(xhr.responseJSON, function f(key, value) {
                         var key1 = key.charAt(0).toUpperCase() + key.slice(1);
                         var key2 = key1.replace(/([A-Z])/g, ' $1').trim();
@@ -81,6 +81,16 @@ $(document).ready(function () {
         data["mobileNo"] = $('#pay-bill input[name="mobileNo"]').val();
         data["customerId"] = $('#get-bill input[name="customer_id"]').val();
         data["transactionId"] = $("#transactionId").find("td:eq(0)").text().trim();
+        var validMobileNumber = /^(?:\+?88)?01[13-9]\d{8}$/;
+        if(!data["mobileNo"].match(validMobileNumber))
+        {
+           alert("Invalid Mobile Number!");
+           return false;
+        }
+        if(data["paidAmount"] !== parseFloat($('#paybleAmount td').text())){
+            alert("Paid Amount must be equal to Payable Amount!");
+            return false;
+        }
         $.ajax({
             method: "POST",
             url: "/ajax/payment",
@@ -109,8 +119,9 @@ $(document).ready(function () {
             error: function (xhr, status, error) {
                 $(".pay-information-loader").hide();
                 var html = "";
-                console.log(xhr);
-                console.log(xhr.responseJSON);
+                if(xhr.status === 403){
+                    window.location.replace("/");
+                }
                 $(".ajax-result").show();
                 $.each(xhr.responseJSON, function f(key, value) {
                     var key1 = key.charAt(0).toUpperCase() + key.slice(1);

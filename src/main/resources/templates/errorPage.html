@@ -6,25 +6,33 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title th:text="${title}">Error</title>
-    <script th:replace="fragments/header :: bootstrap"></script>
-    <script th:replace="fragments/header :: jquery"></script>
+    <link rel="stylesheet" type="text/css" th:href="@{~/css/error.css}" />
 </head>
 <body>
 <script th:replace="fragments/header :: banner"></script>
 <div class="page">
     <div th:switch="${code}">
         <div th:case="null">
-            <div style="text-align: center">
-                <h1>:-(</h1>
-                <h2>Something went wrong and we couldn't complete your request.</h2>
-                <a href="/">Go back to Home</a>
+            <div id="notfound">
+                <div class="notfound">
+                    <div class="notfound-404">
+                        <h1 th:text="${status}">404</h1>
+                    </div>
+                    <h2 th:text="${message}">Oops! This Page Could Not Be Found</h2>
+                    <p th:text="${exception}">Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily unavailable</p>
+                    <p th:text="${timestamp}"></p>
+                    <a href="#">Go To Homepage</a>
+                </div>
             </div>
         </div>
         <div th:case="*">
-            <div style="text-align: center">
-                <h1>:-(</h1>
-                <h2 th:text="${errorMsg}"></h2>
-                <a th:href="@{'/' + ${path}}">Go back</a>
+            <div class="notfound">
+                <div class="notfound-404">
+                    <h1 th:text="${code}">404</h1>
+                </div>
+                <p th:text="${errorMsg}">Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily unavailable</p>
+                <p th:text="${timestamp}"></p>
+                <a th:href="@{'/' + ${path}}">Go To Homepage</a>
             </div>
         </div>
     </div>

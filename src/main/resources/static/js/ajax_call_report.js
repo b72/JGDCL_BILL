@@ -46,7 +46,9 @@ $(document).ready(function () {
                     }
                 },
                 error: function (xhr, status, error) {
-                    console.log(xhr);
+                    if(xhr.status === 403){
+                        window.location.replace("/");
+                    }
                     $(".loader-report").hide();
                    tableFooter.hide();
                     loadDataTable(table,[],printCounter, fromDate, toDate, (xhr.responseText) ? xhr.responseText : xhr.message);

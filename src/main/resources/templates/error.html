@@ -1,78 +1,35 @@
-<!doctype html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Error</title>
-    <link rel="stylesheet" th:href="@{/webjars/bootstrap/4.1.1/css/bootstrap.min.css}"/>
-    <script th:href="@{/webjars/jquery/4.1.1/bootstrap.min.js} "></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title th:text="${error}"></title>
+
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:500" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Titillium+Web:700,900" rel="stylesheet">
+
     <link rel="stylesheet" type="text/css" th:href="@{~/css/error.css}" />
+
+
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
 </head>
 <body>
-<div class="container">
-    <div class="row">
-        <h1>Error!!</h1>
-    </div>
-    <div class="row">It apperrs Either something went wrong or the page
-        doesn't exist anymore.....</div>
-    <div class="row rowDesign">
-        <div class="col-md-4 ml-auto">
-            <span class="legend">Date</span>
+<div id="notfound">
+    <div class="notfound">
+        <div class="notfound-404">
+            <h1 th:text="${status}"></h1>
         </div>
-        <div class="col-md-8">
-            <span th:text="${timestamp}"></span>
-        </div>
-    </div>
-    <div class="row rowDesign">
-        <div class="col-md-4 ml-auto">
-            <span class="legend">Path</span>
-        </div>
-        <div class="col-md-8">
-            <span th:text="${path}"></span>
-        </div>
-    </div>
-    <div class="row rowDesign">
-        <div class="col-md-4 ml-auto">
-            <span class="legend">Error</span>
-        </div>
-        <div class="col-md-8">
-            <span th:text="${error}"></span>
-        </div>
-    </div>
-    <div class="row rowDesign">
-        <div class="col-md-4 ml-auto">
-            <span class="legend">Status</span>
-        </div>
-        <div class="col-md-8">
-            <span th:text="${status}"></span>
-        </div>
-    </div>
-    <div class="row rowDesign">
-        <div class="col-md-4 ml-auto">
-            <span class="legend">Message</span>
-        </div>
-        <div class="col-md-8">
-            <span th:text="${message}"></span>
-        </div>
-    </div>
-    <div class="row rowDesign">
-        <div class="col-md-4 ml-auto">
-            <span class="legend">Exception</span>
-        </div>
-        <div class="col-md-8">
-            <span th:text="${exception}"></span>
-        </div>
-    </div>
-    <div class="row rowDesign">
-        <div class="col-md-4 ml-auto">
-            <span class="legend">Trace</span>
-        </div>
-        <div class="col-md-8">
-            <span th:text="${trace}"></span>
-        </div>
+        <h2 th:text="${message}">Oops! This Page Could Not Be Found</h2>
+        <p th:text="${exception}">Sorry but the page you are looking for does not exist, have been removed. name changed or is temporarily unavailable</p>
+        <p th:text="${timestamp}"></p>
+        <a href="#">Go To Homepage</a>
     </div>
 </div>
+
 </body>
 </html>
